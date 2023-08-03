@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "964079088472",
+    "project_id": "abroadlink-3e8e6",
+    "storage_bucket": "abroadlink-3e8e6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964079088472:android:c7b08ce5a6eaff60faeb2d",
+        "android_client_info": {
+          "package_name": "com.bilcodes.abroadlink"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "964079088472-54afgj7ah6eisefrsdqhf8vkmbh37h7f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRLZw4VhbA87jNOIHmQOSXJzTKr6GrcCM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "964079088472-54afgj7ah6eisefrsdqhf8vkmbh37h7f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
