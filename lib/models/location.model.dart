@@ -58,7 +58,7 @@ class LocationModel {
     );
   }
 
-  String toJson() => json.encode(toMap());
+  // String toJson() => json.encode(toMap());
 
   factory LocationModel.fromJson(String source) =>
       LocationModel.fromMap(json.decode(source) as Map<String, dynamic>);
