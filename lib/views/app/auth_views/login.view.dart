@@ -2,11 +2,13 @@
 
 import 'package:abroadlink/config/colors.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
+import 'package:abroadlink/views/app/auth_views/signup.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends StatefulWidget {
+  static route() => MaterialPageRoute(builder: (context) => LoginView());
   const LoginView({super.key});
 
   @override
@@ -153,7 +155,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                       SizedBox(height: 20.0),
                       Consumer(builder: (context, ref, _) {
-                        final isAuthLoading = ref.watch(authProvider);
+                        final isAuthLoading = ref.watch(authNotifierProvider);
                         return SizedBox(
                           width: double.infinity,
                           child: isAuthLoading
@@ -169,8 +171,8 @@ class _LoginViewState extends State<LoginView> {
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
                                       _formKey.currentState!.save();
-                                      final authServiceProvider =
-                                          ref.read(authProvider.notifier);
+                                      final authServiceProvider = ref
+                                          .read(authNotifierProvider.notifier);
                                       await authServiceProvider
                                           .loginWithEmailAndPassword(
                                               _emailController.text,
@@ -197,7 +199,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, '/signupView');
+                              Navigator.push(context, SignupView.route());
                             },
                             child: Text(
                               "Signup",

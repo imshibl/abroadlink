@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
 @immutable
-class NearbyUsersModel {
+class ExploreUsersModel {
   final String? username;
   final String fullname;
   final String? uid;
@@ -20,7 +20,7 @@ class NearbyUsersModel {
   final double long;
   final String place;
   final int distance;
-  const NearbyUsersModel({
+  const ExploreUsersModel({
     this.username,
     required this.fullname,
     this.uid,
@@ -37,10 +37,10 @@ class NearbyUsersModel {
     required this.distance,
   });
 
-  factory NearbyUsersModel.fromFirestore(
+  factory ExploreUsersModel.fromFirestore(
       DocumentSnapshot doc, String place, int distance) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return NearbyUsersModel(
+    return ExploreUsersModel(
       username: data['username'] != null ? data['username'] as String : null,
       fullname: data['fullname'] as String,
       uid: data['uid'] != null ? data['uid'] as String : null,
@@ -58,7 +58,7 @@ class NearbyUsersModel {
     );
   }
 
-  NearbyUsersModel copyWith({
+  ExploreUsersModel copyWith({
     String? username,
     String? fullname,
     String? uid,
@@ -74,7 +74,7 @@ class NearbyUsersModel {
     String? place,
     int? distance,
   }) {
-    return NearbyUsersModel(
+    return ExploreUsersModel(
       username: username ?? this.username,
       fullname: fullname ?? this.fullname,
       uid: uid ?? this.uid,
@@ -113,8 +113,8 @@ class NearbyUsersModel {
     };
   }
 
-  factory NearbyUsersModel.fromMap(Map<String, dynamic> map) {
-    return NearbyUsersModel(
+  factory ExploreUsersModel.fromMap(Map<String, dynamic> map) {
+    return ExploreUsersModel(
       username: map['username'] != null ? map['username'] as String : null,
       fullname: map['fullname'] as String,
       uid: map['uid'] != null ? map['uid'] as String : null,
@@ -134,8 +134,8 @@ class NearbyUsersModel {
 
   String toJson() => json.encode(toMap());
 
-  factory NearbyUsersModel.fromJson(String source) =>
-      NearbyUsersModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ExploreUsersModel.fromJson(String source) =>
+      ExploreUsersModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -143,7 +143,7 @@ class NearbyUsersModel {
   }
 
   @override
-  bool operator ==(covariant NearbyUsersModel other) {
+  bool operator ==(covariant ExploreUsersModel other) {
     if (identical(this, other)) return true;
 
     return other.username == username &&

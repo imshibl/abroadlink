@@ -4,6 +4,7 @@ import 'package:abroadlink/config/colors.dart';
 import 'package:abroadlink/notifiers/location_notifier/location.notifier.dart';
 import 'package:abroadlink/notifiers/user_notifier/user.notifier.dart';
 import 'package:abroadlink/utils/snackbar.dart';
+import 'package:abroadlink/views/app/auth_views/login.view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,13 +29,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         actions: [
           IconButton(
             onPressed: () {
-              final authServiceProvider = ref.read(authProvider.notifier);
+              final authServiceProvider =
+                  ref.read(authNotifierProvider.notifier);
               authServiceProvider.logout().then((value) => {
-                    ref
-                        .read(locationStateNotifierProvider.notifier)
-                        .resetState(),
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, "/loginView", (route) => false)
+                    ref.read(locationNotifierProvider.notifier).resetState(),
+                    Navigator.pushAndRemoveUntil(
+                        context, LoginView.route(), (route) => false)
                   });
             },
             icon: Icon(Icons.logout),

@@ -1,3 +1,5 @@
+import 'package:abroadlink/views/app/auth_views/login.view.dart';
+import 'package:abroadlink/views/app/auth_views/verify_email.view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,11 +19,11 @@ class _SplashViewState extends State<SplashView> {
 
     if (user != null) {
       Future.delayed(const Duration(seconds: 3), () {
-        Navigator.pushReplacementNamed(context, '/verifyEmailView');
+        Navigator.pushReplacement(context, VerifyEmailView.route());
       });
     } else {
       Future.delayed(const Duration(seconds: 3), () {
-        Navigator.pushReplacementNamed(context, '/loginView');
+        Navigator.pushReplacement(context, LoginView.route());
       });
     }
   }

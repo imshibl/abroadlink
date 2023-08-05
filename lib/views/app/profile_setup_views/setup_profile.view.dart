@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:abroadlink/models/user_model/current_user.model.dart';
+import 'package:abroadlink/models/current_user.model.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/widgets/CustomTextField1.widget.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +59,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final locationNotifier2 = ref.watch(locationStateNotifierProvider);
+    final locationNotifier2 = ref.watch(locationNotifierProvider);
 
     return Scaffold(
       backgroundColor: mainBgColor,
@@ -207,7 +207,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                         icon: Icon(Icons.location_pin, color: Colors.white),
                         onPressed: () {
                           ref
-                              .read(locationStateNotifierProvider.notifier)
+                              .read(locationNotifierProvider.notifier)
                               .fetchLocation();
                         },
                       ),
@@ -217,7 +217,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                   IconButton(
                     onPressed: () async {
                       final authServiceProvider =
-                          ref.read(authProvider.notifier);
+                          ref.read(authNotifierProvider.notifier);
 
                       UserModel userModel = UserModel(
                         fullname: _nameController.text,

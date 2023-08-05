@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:abroadlink/config/colors.dart';
-import 'package:abroadlink/models/user_model/nearby_users.model.dart';
+import 'package:abroadlink/models/explore_users.model.dart';
 import 'package:abroadlink/views/app/main_views/views/explore/user_profile.view.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class ExploreView extends ConsumerStatefulWidget {
 class _ExploreViewState extends ConsumerState<ExploreView> {
   @override
   Widget build(BuildContext context) {
-    final locationNotifier = ref.read(locationStateNotifierProvider.notifier);
+    final locationNotifier = ref.read(locationNotifierProvider.notifier);
     return FutureBuilder(
         future: locationNotifier.getLocation(),
         builder: (context, snapshot) {
@@ -54,8 +54,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
               ],
             ),
             body: Consumer(builder: (context, ref, _) {
-              final locationNotifier2 =
-                  ref.watch(locationStateNotifierProvider);
+              final locationNotifier2 = ref.watch(locationNotifierProvider);
 
               return ListView(
                 children: [
@@ -141,7 +140,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                       SizedBox(height: 10),
                       FutureBuilder(
                           future: ref
-                              .read(exploreUsersProvider.notifier)
+                              .read(exploreUsersNotifierProvider.notifier)
                               .fetchNearbyUsers(locationNotifier2.lat,
                                   locationNotifier2.long, 500),
                           builder: (context, snapshot) {
@@ -165,7 +164,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: nearbyUsers.length,
                               itemBuilder: (context, index) {
-                                NearbyUsersModel user = nearbyUsers[index];
+                                ExploreUsersModel user = nearbyUsers[index];
                                 return UsersCard(
                                   username: user.username!,
                                   distance: user.distance.toString(),

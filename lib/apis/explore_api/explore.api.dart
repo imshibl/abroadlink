@@ -5,42 +5,43 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:abroadlink/apis/location_services/location.service.dart';
-import '../../models/user_model/nearby_users.model.dart';
+import '../../models/explore_users.model.dart';
+import '../../notifiers/location_notifier/location.notifier.dart';
 
-final exploreProvider = Provider<ExploreServices>((ref) {
-  return ExploreServices(
-      locationServices: ref.watch(locationServiceProvider),
-      firebaseCollections: ref.watch(firebaseProvider));
+final exploreAPIServiceProvider = Provider<ExploreAPIServices>((ref) {
+  return ExploreAPIServices(
+      locationNotifier: ref.watch(locationNotifierProvider.notifier),
+      firebaseCollections: ref.watch(firebaseCollectionProvider));
 });
 
 abstract class IExploreAPIServices {
-  Future<List<NearbyUsersModel>> fetchNearbyUsers(
+  Future<List<ExploreUsersModel>> fetchNearbyUsers(
       {required double userLat,
       required double userLong,
       required int maxDistance});
 
-  Future<NearbyUsersModel> fetchUserDetails(
+  Future<ExploreUsersModel> fetchUserDetails(
       {required String uid, required double userLat, required double userLong});
 }
 
-class ExploreServices implements IExploreAPIServices {
-  final LocationServices _locationServices;
+class ExploreAPIServices implements IExploreAPIServices {
+  final LocationNotifier _locationNotifier;
   final FirebaseCollections _firebaseCollections;
-  ExploreServices({
-    required LocationServices locationServices,
+  ExploreAPIServices({
+    required LocationNotifier locationNotifier,
     required FirebaseCollections firebaseCollections,
   })  : _firebaseCollections = firebaseCollections,
-        _locationServices = locationServices;
+        _locationNotifier = locationNotifier;
 
   @override
-  Future<List<NearbyUsersModel>> fetchNearbyUsers(
+  Future<List<ExploreUsersModel>> fetchNearbyUsers(
       {required double userLat,
       required double userLong,
       required int maxDistance}) async {
     final QuerySnapshot querySnapshot =
-        await _firebaseCollections.usersCollection.get();
-    final List<NearbyUsersModel> nearbyUsers = [];
+        await _firebaseCollections.usersCollection.limit(10).get();
+
+    final List<ExploreUsersModel> nearbyUsers = [];
 
     for (var doc in querySnapshot.docs) {
       List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -49,10 +50,10 @@ class ExploreServices implements IExploreAPIServices {
       final state = placemarks.first.administrativeArea;
       String location = "$city,$state";
 
-      int distance = _locationServices.calculateDistance(
+      int distance = _locationNotifier.calculateDistance(
           userLat, userLong, doc['lat'].toDouble(), doc['long'].toDouble());
 
-      NearbyUsersModel user = NearbyUsersModel(
+      ExploreUsersModel user = ExploreUsersModel(
         username: doc['username'],
         fullname: doc['fullname'],
         uid: doc['uid'],
@@ -81,7 +82,7 @@ class ExploreServices implements IExploreAPIServices {
   }
 
   @override
-  Future<NearbyUsersModel> fetchUserDetails(
+  Future<ExploreUsersModel> fetchUserDetails(
       {required String uid,
       required double userLat,
       required double userLong}) async {
@@ -98,12 +99,12 @@ class ExploreServices implements IExploreAPIServices {
         final state = placemarks.first.administrativeArea;
         location = "$city,$state";
 
-        distance = _locationServices.calculateDistance(userLat, userLong,
+        distance = _locationNotifier.calculateDistance(userLat, userLong,
             value['lat'].toDouble(), value['long'].toDouble());
         return value;
       });
 
-      return NearbyUsersModel.fromFirestore(doc, location, distance);
+      return ExploreUsersModel.fromFirestore(doc, location, distance);
     } catch (e) {
       rethrow;
     }
