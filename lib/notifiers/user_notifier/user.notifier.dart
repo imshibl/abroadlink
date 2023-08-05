@@ -1,16 +1,52 @@
-import 'package:abroadlink/services/user_services/user.service.dart';
-import 'package:flutter/material.dart';
+import 'package:abroadlink/models/user_model/current_user.model.dart';
+import 'package:abroadlink/apis/user_services/user.service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final userNotifierProvider = ChangeNotifierProvider<UserNotifier>(
-    (ref) => UserNotifier(userServices: ref.read(userProvider)));
+// final currentUserProvider = FutureProvider((ref) async {
+//   final userServices = ref.watch(userProvider);
+//   final userData = await userServices.getCurrentUserData();
+//   return userData;
+// });
 
-class UserNotifier extends ChangeNotifier {
-  UserServices userServices;
-  UserNotifier({required this.userServices});
+final userNotifierProvider = StateNotifierProvider<UserNotifier, UserModel?>(
+    (ref) => UserNotifier(userServices: ref.watch(userProvider)));
 
-  Future fetchUserData() async {
-    final userData = await userServices.getCurrentUserData();
-    return userData;
+// final getCurrentUserData = FutureProvider<UserModel?>((ref) async {
+//   final userServices = ref.watch(userProvider);
+//   final userData = await userServices.getCurrentUserData();
+//   return userData;
+// });
+
+class UserNotifier extends StateNotifier<UserModel?> {
+  UserNotifier({required this.userServices})
+      : super(const UserModel(
+            fullname: '',
+            homeCountry: '',
+            homeCountryCode: '',
+            lat: 0,
+            long: 0,
+            phoneNumber: '',
+            studyAbroadDestination: '',
+            studyAbroadDestinationCode: ''));
+
+  final UserServices userServices;
+
+  Future<UserModel?> getCurrentUserData() async {
+    try {
+      state = await userServices.getCurrentUserData();
+      return state;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<UserModel?> updateUserName(String name) async {
+    try {
+      await userServices.updateUserName(name);
+      state = state!.copyWith(fullname: name);
+      return state;
+    } catch (e) {
+      return null;
+    }
   }
 }

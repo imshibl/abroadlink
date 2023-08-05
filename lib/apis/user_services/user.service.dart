@@ -5,8 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userProvider = Provider<UserServices>((ref) => UserServices());
 
-class UserServices {
+abstract class ICurrentUserAPIServices {
+  Future<UserModel?> getCurrentUserData();
+
+  Future<void> updateUserName(String name);
+}
+
+class UserServices implements ICurrentUserAPIServices {
   // Function to get the current logged-in user's data
+  @override
   Future<UserModel?> getCurrentUserData() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User? user = auth.currentUser;
@@ -22,5 +29,19 @@ class UserServices {
     }
 
     return null; // User data not found or user is not logged in
+  }
+
+  @override
+  Future<void> updateUserName(String name) {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+
+    if (user != null) {
+      final CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection('users');
+      return usersCollection.doc(user.uid).update({'fullname': name});
+    }
+
+    return Future.value(); // User data not found or user is not logged in
   }
 }

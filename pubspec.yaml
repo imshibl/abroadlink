@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.4 <3.0.0'
+  sdk: '>=3.0.6 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -44,7 +44,7 @@ dependencies:
   geocoding: ^2.0.5
   geolocator: ^9.0.2
 
-  csc_picker: ^0.2.7
+  # csc_picker: ^0.2.7
   country_picker: ^2.0.20
   country_flags: ^2.1.0
 
@@ -57,6 +57,7 @@ dependencies:
   firebase_auth: ^4.2.8
   firebase_core: ^2.6.1
   cloud_firestore: ^4.4.2
+  firebase_ui_firestore: ^1.5.6
   
 
 dev_dependencies:

@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:abroadlink/config/colors.dart';
-import 'package:abroadlink/notifiers/location_notifier/loc.notifier.dart';
-import 'package:abroadlink/services/user_services/user.service.dart';
+import 'package:abroadlink/notifiers/location_notifier/location.notifier.dart';
+import 'package:abroadlink/notifiers/user_notifier/user.notifier.dart';
+import 'package:abroadlink/utils/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +42,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         ],
       ),
       body: FutureBuilder(
-          future: ref.read(userProvider).getCurrentUserData(),
+          future: ref.read(userNotifierProvider.notifier).getCurrentUserData(),
           builder: ((context, snapshot) {
             final userData = snapshot.data;
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -57,7 +58,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 }
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final String fullname;
   final String homeCountry;
   final String studyAbroadDestination;
@@ -69,6 +70,12 @@ class ProfileScreen extends StatelessWidget {
     required this.studyAbroadDestination,
   });
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final TextEditingController _updateNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -124,22 +131,81 @@ class ProfileScreen extends StatelessWidget {
               Spacer()
             ],
           ),
-          Text(
-            fullname,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade200,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Consumer(builder: (context, ref, _) {
+            final user = ref.watch(userNotifierProvider);
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  user!.fullname.toString(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade200,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          _updateNameController.text = user.fullname.toString();
+                          return AlertDialog(
+                            title: Text("Edit Name"),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            content: TextField(
+                              controller: _updateNameController,
+                              decoration: InputDecoration(
+                                hintText: "Enter your name",
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text("Cancel"),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  await ref
+                                      .read(userNotifierProvider.notifier)
+                                      .updateUserName(
+                                          _updateNameController.text)
+                                      .then((value) {
+                                    if (value != null) {
+                                      Navigator.pop(context);
+                                    } else {
+                                      showSnackBar(context,
+                                          message: "Something went wrong");
+                                    }
+                                  });
+                                },
+                                child: Text("Save"),
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  child: Icon(
+                    Icons.edit,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            );
+          }),
           SizedBox(height: 5),
-          Text("Home Country: $homeCountry",
+          Text("Home Country: ${widget.homeCountry}",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade200,
                 fontWeight: FontWeight.w400,
               )),
-          Text("Study Abroad Destination: $studyAbroadDestination",
+          Text("Study Abroad Destination: ${widget.studyAbroadDestination}",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade200,

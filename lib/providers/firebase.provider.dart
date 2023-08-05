@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final firebaseProvider =
-    Provider<FirebaseServices>((ref) => FirebaseServices());
+    Provider<FirebaseCollections>((ref) => FirebaseCollections());
 
-class FirebaseServices {
+class FirebaseCollections {
   //collection reference
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');

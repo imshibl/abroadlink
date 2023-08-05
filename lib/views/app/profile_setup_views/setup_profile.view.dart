@@ -8,40 +8,58 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../config/colors.dart';
 import 'package:country_picker/country_picker.dart';
-import '../../../notifiers/location_notifier/loc.notifier.dart';
+import '../../../notifiers/location_notifier/location.notifier.dart';
 
 class SetupProfileView extends ConsumerStatefulWidget {
-  const SetupProfileView({super.key});
+  const SetupProfileView(
+      {required this.email,
+      required this.password,
+      required this.username,
+      super.key});
+
+  final String email;
+  final String password;
+  final String username;
 
   @override
   ConsumerState<SetupProfileView> createState() => _SetupProfileViewState();
+
+  static route(
+          {required String email,
+          required String password,
+          required String username}) =>
+      MaterialPageRoute(
+        builder: (context) => SetupProfileView(
+          email: email,
+          password: password,
+          username: username,
+        ),
+      );
 }
 
 class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
+  String destinationCountryCode = "";
+  String homeCountryCode = "";
+  String phoneNumberCode = "91";
+
+  final TextEditingController _homeCountryController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _preferedCountryController =
       TextEditingController();
-  final TextEditingController _homeCountryController = TextEditingController();
 
-  String phoneNumberCode = "91";
-  String homeCountryCode = "";
-  String destinationCountryCode = "";
+  @override
+  dispose() {
+    _nameController.dispose();
+    _phoneNumberController.dispose();
+    _preferedCountryController.dispose();
+    _homeCountryController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // LocationNotifier locationNotifier = ref.watch(locationProvider);
-
-    // final locationNotifier1 = ref.watch(locationStateNotifierProvider.notifier);
-
     final locationNotifier2 = ref.watch(locationStateNotifierProvider);
-
-    final Map<String, dynamic> data =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-
-    final String userName = data['username'];
-    final String email = data['email'];
-    final String password = data['password'];
 
     return Scaffold(
       backgroundColor: mainBgColor,
@@ -212,7 +230,11 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                         long: locationNotifier2.long,
                       );
                       await authServiceProvider.registerWithEmailAndPassword(
-                          context, userName, email, password, userModel);
+                          context,
+                          widget.username,
+                          widget.email,
+                          widget.password,
+                          userModel);
                     },
                     icon: Icon(Icons.arrow_forward_ios),
                   ),

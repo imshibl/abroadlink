@@ -4,17 +4,17 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../services/location_services/location.service.dart';
+import '../../apis/location_services/location.service.dart';
 
 final locationStateNotifierProvider =
     StateNotifierProvider<LocationNotifier1, LocationModel>((ref) {
-  return LocationNotifier1(locationSerices: ref.read(locationServiceProvider));
+  return LocationNotifier1(locationSerices: ref.watch(locationServiceProvider));
 });
 
 class LocationNotifier1 extends StateNotifier<LocationModel> {
   LocationServices locationSerices;
   LocationNotifier1({required this.locationSerices})
-      : super(LocationModel(
+      : super(const LocationModel(
           isLocationFetched: false,
           lat: 0,
           long: 0,
@@ -29,7 +29,7 @@ class LocationNotifier1 extends StateNotifier<LocationModel> {
     // Check if we have location permission
     final permissionStatus = await Permission.location.request();
     if (permissionStatus == PermissionStatus.granted) {
-      state = LocationModel(
+      state = const LocationModel(
         isFetchingLocation: true,
         isLocationFetched: false,
         lat: 0,
@@ -56,7 +56,7 @@ class LocationNotifier1 extends StateNotifier<LocationModel> {
           hasError: false,
         );
       } catch (e) {
-        state = LocationModel(
+        state = const LocationModel(
           isFetchingLocation: false,
           isLocationFetched: false,
           lat: 0,
@@ -66,7 +66,7 @@ class LocationNotifier1 extends StateNotifier<LocationModel> {
         );
       }
     } else {
-      state = LocationModel(
+      state = const LocationModel(
         isFetchingLocation: false,
         isLocationFetched: false,
         lat: 0,
@@ -108,13 +108,13 @@ class LocationNotifier1 extends StateNotifier<LocationModel> {
       );
       return state;
     } catch (e) {
-      rethrow;
+      return Future.error(e);
     }
   }
 
   // Method to reset the state
   void resetState() {
-    state = LocationModel(
+    state = const LocationModel(
       isLocationFetched: false,
       lat: 0,
       long: 0,

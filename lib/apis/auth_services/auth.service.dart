@@ -7,9 +7,27 @@ final authServiceProvider = Provider<AuthServices>(
   (ref) => AuthServices(),
 );
 
-class AuthServices {
+abstract class IAuthAPIServices {
+  Future<UserCredential> signUp(
+      String username, String email, String password, UserModel usermodel);
+
+  Future<UserCredential> signIn(String email, String password);
+
+  Future<bool> isUsernameAvailable(String username);
+
+  Future<bool> isEmailIsAvailable(String email);
+
+  Future<void> removeUserData(String userId);
+
+  Future<void> deleteAccount();
+
+  Future<void> signOut();
+}
+
+class AuthServices implements IAuthAPIServices {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  @override
   Future<UserCredential> signUp(String username, String email, String password,
       UserModel usermodel) async {
     try {
@@ -59,6 +77,7 @@ class AuthServices {
     }
   }
 
+  @override
   Future<UserCredential> signIn(String email, String password) async {
     try {
       UserCredential userCredential = await _firebaseAuth
@@ -78,6 +97,7 @@ class AuthServices {
     }
   }
 
+  @override
   Future<bool> isUsernameAvailable(String username) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('usersData')
@@ -87,6 +107,7 @@ class AuthServices {
     return querySnapshot.docs.isEmpty;
   }
 
+  @override
   Future<bool> isEmailIsAvailable(String email) async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('usersData')
@@ -96,6 +117,7 @@ class AuthServices {
     return querySnapshot.docs.isEmpty;
   }
 
+  @override
   Future<void> removeUserData(String userId) async {
     final db = FirebaseFirestore.instance;
 
@@ -114,6 +136,7 @@ class AuthServices {
     await userDocRef.delete();
   }
 
+  @override
   Future<void> deleteAccount() async {
     User? currentUser = _firebaseAuth.currentUser;
 
@@ -124,6 +147,7 @@ class AuthServices {
     }
   }
 
+  @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
   }

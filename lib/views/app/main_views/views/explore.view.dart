@@ -2,13 +2,14 @@
 
 import 'package:abroadlink/config/colors.dart';
 import 'package:abroadlink/models/user_model/nearby_users.model.dart';
+import 'package:abroadlink/views/app/main_views/views/explore/user_profile.view.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../notifiers/explore_notifier/explore.notifier.dart';
-import '../../../../notifiers/location_notifier/loc.notifier.dart';
+import '../../../../notifiers/explore_notifier/explore_users.notifier.dart';
+import '../../../../notifiers/location_notifier/location.notifier.dart';
 
 class ExploreView extends ConsumerStatefulWidget {
   const ExploreView({super.key});
@@ -29,6 +30,10 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
               body: Center(
                 child: CircularProgressIndicator(),
               ),
+            );
+          } else if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(child: Text("Something went wrong")),
             );
           }
 
@@ -51,8 +56,6 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
             body: Consumer(builder: (context, ref, _) {
               final locationNotifier2 =
                   ref.watch(locationStateNotifierProvider);
-
-              final usersNotifier = ref.read(usersProvider);
 
               return ListView(
                 children: [
@@ -137,10 +140,10 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                       ),
                       SizedBox(height: 10),
                       FutureBuilder(
-                          future: ref.read(usersProvider).fetchNearbyUsers(
-                              locationNotifier2.lat,
-                              locationNotifier2.long,
-                              500),
+                          future: ref
+                              .read(exploreUsersProvider.notifier)
+                              .fetchNearbyUsers(locationNotifier2.lat,
+                                  locationNotifier2.long, 500),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -160,7 +163,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                               ),
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount: usersNotifier.users.length,
+                              itemCount: nearbyUsers.length,
                               itemBuilder: (context, index) {
                                 NearbyUsersModel user = nearbyUsers[index];
                                 return UsersCard(
@@ -170,6 +173,14 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                   homeCountryCode: user.homeCountryCode,
                                   studyAbroadDestinationCode:
                                       user.studyAbroadDestinationCode,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      UserProfileView.route(
+                                        selectedUserUID: user.uid.toString(),
+                                      ),
+                                    );
+                                  },
                                 );
                               },
                             );
@@ -190,6 +201,7 @@ class UsersCard extends StatelessWidget {
   final String place;
   final String homeCountryCode;
   final String studyAbroadDestinationCode;
+  final Function() onTap;
   const UsersCard({
     super.key,
     required this.username,
@@ -197,75 +209,79 @@ class UsersCard extends StatelessWidget {
     required this.place,
     required this.homeCountryCode,
     required this.studyAbroadDestinationCode,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: lightColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: EdgeInsets.all(10),
-      margin: EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            child: Icon(
-              Icons.person,
-              size: 35,
-              color: Colors.black,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: lightColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.white,
+              child: Icon(
+                Icons.person,
+                size: 35,
+                color: Colors.black,
+              ),
             ),
-          ),
-          SizedBox(height: 10),
-          Text(
-            username,
-            style: TextStyle(
-                color: Colors.grey.shade200,
-                fontSize: 16,
-                fontWeight: FontWeight.w500),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CountryFlag.fromCountryCode(
-                homeCountryCode,
-                height: 23,
-                width: 23,
-                borderRadius: 3,
-              ),
-              Text(
-                "  to  ",
-                style: TextStyle(
-                    color: Colors.grey.shade400, fontWeight: FontWeight.bold),
-              ),
-              CountryFlag.fromCountryCode(
-                studyAbroadDestinationCode,
-                height: 23,
-                width: 23,
-                borderRadius: 3,
-              ),
-            ],
-          ),
-          // Text(
-          //   place,
-          //   style: TextStyle(
-          //     color: Colors.grey.shade200,
-          //     fontSize: 14,
-          //   ),
-          // ),
-          Text(
-            "$distance km away",
-            style: TextStyle(
-                color: Colors.grey.shade200,
-                fontSize: 14,
-                fontWeight: FontWeight.w600),
-          ),
-        ],
+            SizedBox(height: 10),
+            Text(
+              username,
+              style: TextStyle(
+                  color: Colors.grey.shade200,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CountryFlag.fromCountryCode(
+                  homeCountryCode,
+                  height: 23,
+                  width: 23,
+                  borderRadius: 3,
+                ),
+                Text(
+                  "  to  ",
+                  style: TextStyle(
+                      color: Colors.grey.shade400, fontWeight: FontWeight.bold),
+                ),
+                CountryFlag.fromCountryCode(
+                  studyAbroadDestinationCode,
+                  height: 23,
+                  width: 23,
+                  borderRadius: 3,
+                ),
+              ],
+            ),
+            // Text(
+            //   place,
+            //   style: TextStyle(
+            //     color: Colors.grey.shade200,
+            //     fontSize: 14,
+            //   ),
+            // ),
+            Text(
+              "$distance km away",
+              style: TextStyle(
+                  color: Colors.grey.shade200,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
       ),
     );
   }

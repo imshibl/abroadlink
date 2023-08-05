@@ -1,4 +1,4 @@
-import 'package:abroadlink/services/auth_services/auth.service.dart';
+import 'package:abroadlink/apis/auth_services/auth.service.dart';
 import 'package:abroadlink/utils/snackbar.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/user_model/current_user.model.dart';
 
 final authProvider = StateNotifierProvider.autoDispose<AuthProvider, bool>(
-    (ref) => AuthProvider(ref.read(authServiceProvider)));
+    (ref) => AuthProvider(ref.watch(authServiceProvider)));
 
 class AuthProvider extends StateNotifier<bool> {
   final AuthServices _authServices;

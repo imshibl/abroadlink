@@ -2,6 +2,7 @@
 
 import 'package:abroadlink/config/colors.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
+import 'package:abroadlink/views/app/profile_setup_views/setup_profile.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -205,14 +206,21 @@ class _SignupViewState extends State<SignupView> {
 
                                     if (isUsernameAvailable &&
                                         isEmailAvailable) {
-                                      Navigator.pushNamed(
+                                      // Navigator.pushNamed(
+                                      //   context,
+                                      //   "/setupProfileView",
+                                      //   arguments: {
+                                      //     "username": _userNameController.text,
+                                      //     "email": _emailController.text,
+                                      //     "password": _passwordController.text
+                                      //   },
+                                      // );
+                                      Navigator.push(
                                         context,
-                                        "/setupProfileView",
-                                        arguments: {
-                                          "username": _userNameController.text,
-                                          "email": _emailController.text,
-                                          "password": _passwordController.text
-                                        },
+                                        SetupProfileView.route(
+                                            email: _emailController.text,
+                                            username: _userNameController.text,
+                                            password: _passwordController.text),
                                       );
                                     } else if (!isUsernameAvailable) {
                                       ScaffoldMessenger.of(context)

@@ -1,6 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
+import 'package:flutter/widgets.dart';
 
+@immutable
 class LocationModel {
   final double lat;
   final double long;
@@ -9,7 +9,7 @@ class LocationModel {
   final bool isFetchingLocation;
   final bool hasError;
 
-  LocationModel({
+  const LocationModel({
     required this.lat,
     required this.long,
     required this.place,
@@ -57,11 +57,6 @@ class LocationModel {
       hasError: map['hasError'] as bool,
     );
   }
-
-  // String toJson() => json.encode(toMap());
-
-  factory LocationModel.fromJson(String source) =>
-      LocationModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
