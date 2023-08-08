@@ -147,8 +147,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Center(child: CircularProgressIndicator());
-                            }
-                            if (snapshot.data!.isEmpty) {
+                            } else if (snapshot.data!.isEmpty) {
                               return Center(child: Text("No Users Found"));
                             }
                             final nearbyUsers = snapshot.data;
@@ -167,7 +166,10 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                 ExploreUsersModel user = nearbyUsers[index];
                                 return UsersCard(
                                   username: user.username!,
-                                  distance: user.distance.toString(),
+                                  distance: user.distance,
+                                  isKm: ref
+                                      .read(locationNotifierProvider.notifier)
+                                      .shouldDisplayInKilometers(user.distance),
                                   place: user.place,
                                   homeCountryCode: user.homeCountryCode,
                                   studyAbroadDestinationCode:
@@ -196,20 +198,21 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
 
 class UsersCard extends StatelessWidget {
   final String username;
-  final String distance;
+  final double distance;
+  final bool isKm;
   final String place;
   final String homeCountryCode;
   final String studyAbroadDestinationCode;
   final Function() onTap;
-  const UsersCard({
-    super.key,
-    required this.username,
-    required this.distance,
-    required this.place,
-    required this.homeCountryCode,
-    required this.studyAbroadDestinationCode,
-    required this.onTap,
-  });
+  const UsersCard(
+      {super.key,
+      required this.username,
+      required this.distance,
+      required this.place,
+      required this.homeCountryCode,
+      required this.studyAbroadDestinationCode,
+      required this.onTap,
+      required this.isKm});
 
   @override
   Widget build(BuildContext context) {
@@ -269,11 +272,12 @@ class UsersCard extends StatelessWidget {
             //   place,
             //   style: TextStyle(
             //     color: Colors.grey.shade200,
-            //     fontSize: 14,
+            //     fontSize: 8,
             //   ),
             // ),
             Text(
-              "$distance km away",
+              isKm ? "${distance.toStringAsFixed(2)} km" : "within 1 km",
+              // : "${(distance * 1000).toStringAsFixed(2)} m",
               style: TextStyle(
                   color: Colors.grey.shade200,
                   fontSize: 14,

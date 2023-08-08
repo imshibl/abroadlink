@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'package:abroadlink/providers/firebase.provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,7 +37,7 @@ class ExploreAPIServices implements IExploreAPIServices {
       required double userLong,
       required int maxDistance}) async {
     final QuerySnapshot querySnapshot =
-        await _firebaseCollections.usersCollection.limit(10).get();
+        await _firebaseCollections.usersCollection.get();
 
     final List<ExploreUsersModel> nearbyUsers = [];
 
@@ -50,7 +48,7 @@ class ExploreAPIServices implements IExploreAPIServices {
       final state = placemarks.first.administrativeArea;
       String location = "$city,$state";
 
-      int distance = _locationNotifier.calculateDistance(
+      double distance = _locationNotifier.calculateDistance(
           userLat, userLong, doc['lat'].toDouble(), doc['long'].toDouble());
 
       ExploreUsersModel user = ExploreUsersModel(
@@ -87,7 +85,7 @@ class ExploreAPIServices implements IExploreAPIServices {
       required double userLat,
       required double userLong}) async {
     late String location;
-    late int distance;
+    late double distance;
     try {
       final DocumentSnapshot doc = await _firebaseCollections.usersCollection
           .doc(uid)

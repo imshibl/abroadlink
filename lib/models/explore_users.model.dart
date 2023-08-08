@@ -19,7 +19,7 @@ class ExploreUsersModel {
   final double lat;
   final double long;
   final String place;
-  final int distance;
+  final double distance;
   const ExploreUsersModel({
     this.username,
     required this.fullname,
@@ -38,7 +38,7 @@ class ExploreUsersModel {
   });
 
   factory ExploreUsersModel.fromFirestore(
-      DocumentSnapshot doc, String place, int distance) {
+      DocumentSnapshot doc, String place, double distance) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return ExploreUsersModel(
       username: data['username'] != null ? data['username'] as String : null,
@@ -72,7 +72,7 @@ class ExploreUsersModel {
     double? lat,
     double? long,
     String? place,
-    int? distance,
+    double? distance,
   }) {
     return ExploreUsersModel(
       username: username ?? this.username,
@@ -128,7 +128,7 @@ class ExploreUsersModel {
       lat: map['lat'] as double,
       long: map['long'] as double,
       place: map['place'] as String,
-      distance: map['distance'] as int,
+      distance: map['distance'] as double,
     );
   }
 
