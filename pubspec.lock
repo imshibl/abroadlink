@@ -333,6 +333,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  geoflutterfire_plus:
+    dependency: "direct main"
+    description:
+      name: geoflutterfire_plus
+      sha256: "159b0f2cc8930d2931a8bb61b2750a87dc03fc2711d3913652042642147ea46b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.16"
   geolocator:
     dependency: "direct main"
     description:

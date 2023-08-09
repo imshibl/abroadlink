@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:abroadlink/config/colors.dart';
-import 'package:abroadlink/models/user_model/nearby_users.model.dart';
+import 'package:abroadlink/models/explore_users.model.dart';
 import 'package:abroadlink/views/app/main_views/views/explore/user_profile.view.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class ExploreView extends ConsumerStatefulWidget {
 class _ExploreViewState extends ConsumerState<ExploreView> {
   @override
   Widget build(BuildContext context) {
-    final locationNotifier = ref.read(locationStateNotifierProvider.notifier);
+    final locationNotifier = ref.read(locationNotifierProvider.notifier);
     return FutureBuilder(
         future: locationNotifier.getLocation(),
         builder: (context, snapshot) {
@@ -54,8 +54,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
               ],
             ),
             body: Consumer(builder: (context, ref, _) {
-              final locationNotifier2 =
-                  ref.watch(locationStateNotifierProvider);
+              final locationNotifier2 = ref.watch(locationNotifierProvider);
 
               return ListView(
                 children: [
@@ -141,15 +140,14 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                       SizedBox(height: 10),
                       FutureBuilder(
                           future: ref
-                              .read(exploreUsersProvider.notifier)
+                              .read(exploreUsersNotifierProvider.notifier)
                               .fetchNearbyUsers(locationNotifier2.lat,
                                   locationNotifier2.long, 500),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Center(child: CircularProgressIndicator());
-                            }
-                            if (snapshot.data!.isEmpty) {
+                            } else if (snapshot.data!.isEmpty) {
                               return Center(child: Text("No Users Found"));
                             }
                             final nearbyUsers = snapshot.data;
@@ -165,10 +163,13 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: nearbyUsers.length,
                               itemBuilder: (context, index) {
-                                NearbyUsersModel user = nearbyUsers[index];
+                                ExploreUsersModel user = nearbyUsers[index];
                                 return UsersCard(
                                   username: user.username!,
-                                  distance: user.distance.toString(),
+                                  distance: user.distance,
+                                  isKm: ref
+                                      .read(locationNotifierProvider.notifier)
+                                      .shouldDisplayInKilometers(user.distance),
                                   place: user.place,
                                   homeCountryCode: user.homeCountryCode,
                                   studyAbroadDestinationCode:
@@ -197,20 +198,21 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
 
 class UsersCard extends StatelessWidget {
   final String username;
-  final String distance;
+  final double distance;
+  final bool isKm;
   final String place;
   final String homeCountryCode;
   final String studyAbroadDestinationCode;
   final Function() onTap;
-  const UsersCard({
-    super.key,
-    required this.username,
-    required this.distance,
-    required this.place,
-    required this.homeCountryCode,
-    required this.studyAbroadDestinationCode,
-    required this.onTap,
-  });
+  const UsersCard(
+      {super.key,
+      required this.username,
+      required this.distance,
+      required this.place,
+      required this.homeCountryCode,
+      required this.studyAbroadDestinationCode,
+      required this.onTap,
+      required this.isKm});
 
   @override
   Widget build(BuildContext context) {
@@ -270,11 +272,12 @@ class UsersCard extends StatelessWidget {
             //   place,
             //   style: TextStyle(
             //     color: Colors.grey.shade200,
-            //     fontSize: 14,
+            //     fontSize: 8,
             //   ),
             // ),
             Text(
-              "$distance km away",
+              isKm ? "${distance.toStringAsFixed(2)} km" : "within 1 km",
+              // : "${(distance * 1000).toStringAsFixed(2)} m",
               style: TextStyle(
                   color: Colors.grey.shade200,
                   fontSize: 14,

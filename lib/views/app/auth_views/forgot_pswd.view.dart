@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:abroadlink/config/colors.dart';
 
 class ForgotPasswordView extends StatefulWidget {
+  static route() =>
+      MaterialPageRoute(builder: (context) => const ForgotPasswordView());
   const ForgotPasswordView({super.key});
 
   @override

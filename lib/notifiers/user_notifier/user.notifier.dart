@@ -1,5 +1,5 @@
-import 'package:abroadlink/models/user_model/current_user.model.dart';
-import 'package:abroadlink/apis/user_services/user.service.dart';
+import 'package:abroadlink/models/current_user.model.dart';
+import 'package:abroadlink/apis/user_api/user.api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // final currentUserProvider = FutureProvider((ref) async {
@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // });
 
 final userNotifierProvider = StateNotifierProvider<UserNotifier, UserModel?>(
-    (ref) => UserNotifier(userServices: ref.watch(userProvider)));
+    (ref) => UserNotifier(userServices: ref.watch(userAPIServiceProvider)));
 
 // final getCurrentUserData = FutureProvider<UserModel?>((ref) async {
 //   final userServices = ref.watch(userProvider);
@@ -29,7 +29,7 @@ class UserNotifier extends StateNotifier<UserModel?> {
             studyAbroadDestination: '',
             studyAbroadDestinationCode: ''));
 
-  final UserServices userServices;
+  final UserAPIServices userServices;
 
   Future<UserModel?> getCurrentUserData() async {
     try {

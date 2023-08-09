@@ -1,10 +1,10 @@
-import 'package:abroadlink/models/user_model/current_user.model.dart';
+import 'package:abroadlink/models/current_user.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final authServiceProvider = Provider<AuthServices>(
-  (ref) => AuthServices(),
+final authAPIServiceProvider = Provider<AuthAPIServices>(
+  (ref) => AuthAPIServices(),
 );
 
 abstract class IAuthAPIServices {
@@ -24,7 +24,7 @@ abstract class IAuthAPIServices {
   Future<void> signOut();
 }
 
-class AuthServices implements IAuthAPIServices {
+class AuthAPIServices implements IAuthAPIServices {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override

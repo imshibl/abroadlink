@@ -1,17 +1,29 @@
-import 'package:abroadlink/models/user_model/nearby_users.model.dart';
+import 'package:abroadlink/models/explore_users.model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../apis/explore_services/explore.service.dart';
+import '../../apis/explore_api/explore.api.dart';
+import '../location_notifier/location.notifier.dart';
 
-final exploreUsersProvider =
-    StateNotifierProvider<ExploreUsersNotifier, List<NearbyUsersModel>>((ref) =>
-        ExploreUsersNotifier(exploreServices: ref.watch(exploreProvider)));
+final exploreUsersNotifierProvider =
+    StateNotifierProvider<ExploreUsersNotifier, List<ExploreUsersModel>>((ref) {
+  final exploreUNotifier = ExploreUsersNotifier(
+      locationNotifier: ref.watch(locationNotifierProvider.notifier),
+      exploreServices: ref.watch(exploreAPIServiceProvider));
+  // exploreUNotifier.initUsers(
+  //   userLat: ref.watch(locationNotifierProvider).lat,
+  //   userLong: ref.watch(locationNotifierProvider).long,
+  // );
+  return exploreUNotifier;
+});
 
-class ExploreUsersNotifier extends StateNotifier<List<NearbyUsersModel>> {
-  ExploreUsersNotifier({required this.exploreServices}) : super([]);
+class ExploreUsersNotifier extends StateNotifier<List<ExploreUsersModel>> {
+  ExploreUsersNotifier(
+      {required this.exploreServices, required this.locationNotifier})
+      : super([]);
 
-  final ExploreServices exploreServices;
+  final ExploreAPIServices exploreServices;
+  final LocationNotifier locationNotifier;
 
-  Future<List<NearbyUsersModel>> fetchNearbyUsers(
+  Future<List<ExploreUsersModel>> fetchNearbyUsers(
       double userLat, double userLong, int maxDistance) async {
     try {
       state = await exploreServices.fetchNearbyUsers(

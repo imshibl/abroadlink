@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VerifyEmailView extends ConsumerStatefulWidget {
+  static route() =>
+      MaterialPageRoute(builder: (context) => const VerifyEmailView());
   const VerifyEmailView({super.key});
 
   @override

@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 // import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class SignupView extends StatefulWidget {
+  static route() => MaterialPageRoute(builder: (context) => SignupView());
   const SignupView({super.key});
 
   @override
@@ -177,7 +178,7 @@ class _SignupViewState extends State<SignupView> {
                     SizedBox(
                       width: double.infinity,
                       child: Consumer(builder: (context, ref, _) {
-                        final isAuthLoading = ref.watch(authProvider);
+                        final isAuthLoading = ref.watch(authNotifierProvider);
                         return isAuthLoading
                             ? Center(
                                 heightFactor: 1,
@@ -192,7 +193,7 @@ class _SignupViewState extends State<SignupView> {
                                   if (_formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
                                     final authServiceProvider =
-                                        ref.read(authProvider.notifier);
+                                        ref.read(authNotifierProvider.notifier);
 
                                     bool isUsernameAvailable =
                                         await authServiceProvider

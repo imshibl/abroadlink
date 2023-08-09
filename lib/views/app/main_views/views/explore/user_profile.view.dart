@@ -16,10 +16,10 @@ class UserProfileView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locationNotifier = ref.read(locationStateNotifierProvider);
+    final locationNotifier = ref.read(locationNotifierProvider);
     return FutureBuilder(
         future: ref
-            .read(exploreUserProfileNotifier.notifier)
+            .read(exploreUserProfileNotifierProvider.notifier)
             .fetchSelectedUserData(
                 selectedUserUID: selectedUserUID,
                 userLat: locationNotifier.lat,

@@ -1,12 +1,12 @@
-import 'package:abroadlink/models/user_model/nearby_users.model.dart';
+import 'package:abroadlink/models/explore_users.model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../apis/explore_services/explore.service.dart';
+import '../../apis/explore_api/explore.api.dart';
 
-final exploreUserProfileNotifier =
-    StateNotifierProvider<ExploreUserProfileNotifier, NearbyUsersModel>((ref) {
+final exploreUserProfileNotifierProvider =
+    StateNotifierProvider<ExploreUserProfileNotifier, ExploreUsersModel>((ref) {
   return ExploreUserProfileNotifier(
-      exploreServices: ref.watch(exploreProvider));
+      exploreServices: ref.watch(exploreAPIServiceProvider));
 });
 
 // final getSelectedUserDataNotifier =
@@ -15,9 +15,9 @@ final exploreUserProfileNotifier =
 //   return userProfileProvider.fetchSelectedUserData(selectedUserUID: uid);
 // });
 
-class ExploreUserProfileNotifier extends StateNotifier<NearbyUsersModel> {
+class ExploreUserProfileNotifier extends StateNotifier<ExploreUsersModel> {
   ExploreUserProfileNotifier({required this.exploreServices})
-      : super(const NearbyUsersModel(
+      : super(const ExploreUsersModel(
             fullname: '',
             phoneNumber: '',
             homeCountry: '',
@@ -29,9 +29,9 @@ class ExploreUserProfileNotifier extends StateNotifier<NearbyUsersModel> {
             place: '',
             distance: 0));
 
-  final ExploreServices exploreServices;
+  final ExploreAPIServices exploreServices;
 
-  Future<NearbyUsersModel> fetchSelectedUserData(
+  Future<ExploreUsersModel> fetchSelectedUserData(
       {required String selectedUserUID,
       required double userLat,
       required double userLong}) async {

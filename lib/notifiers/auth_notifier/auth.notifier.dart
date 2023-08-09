@@ -1,25 +1,27 @@
-import 'package:abroadlink/apis/auth_services/auth.service.dart';
+import 'package:abroadlink/apis/auth_api/auth.api.dart';
 import 'package:abroadlink/utils/snackbar.dart';
+import 'package:abroadlink/views/app/auth_views/verify_email.view.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/user_model/current_user.model.dart';
+import '../../models/current_user.model.dart';
 
-final authProvider = StateNotifierProvider.autoDispose<AuthProvider, bool>(
-    (ref) => AuthProvider(ref.watch(authServiceProvider)));
+final authNotifierProvider =
+    StateNotifierProvider.autoDispose<AuthNotifier, bool>(
+        (ref) => AuthNotifier(ref.watch(authAPIServiceProvider)));
 
-class AuthProvider extends StateNotifier<bool> {
-  final AuthServices _authServices;
+class AuthNotifier extends StateNotifier<bool> {
+  final AuthAPIServices _authServices;
 
-  AuthProvider(this._authServices) : super(false);
+  AuthNotifier(this._authServices) : super(false);
 
   Future<void> loginWithEmailAndPassword(
       String email, String password, BuildContext context) async {
     try {
       state = true;
       await _authServices.signIn(email, password).then((value) {
-        Navigator.pushNamedAndRemoveUntil(
-            context, "/verifyEmailView", (route) => false);
+        Navigator.pushAndRemoveUntil(
+            context, VerifyEmailView.route(), (route) => false);
       });
       state = false;
     } catch (e) {
@@ -40,8 +42,8 @@ class AuthProvider extends StateNotifier<bool> {
           .signUp(username, email, password, userModel)
           .then((value) {
         // print("data $value");
-        Navigator.pushNamedAndRemoveUntil(
-            context, "/verifyEmailView", (route) => false);
+        Navigator.pushAndRemoveUntil(
+            context, VerifyEmailView.route(), (route) => false);
       });
 
       state = false;
