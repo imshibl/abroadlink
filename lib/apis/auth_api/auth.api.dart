@@ -48,8 +48,12 @@ class AuthAPIServices implements IAuthAPIServices {
           studyAbroadDestinationCode: usermodel.studyAbroadDestinationCode,
           homeCountry: usermodel.homeCountry,
           homeCountryCode: usermodel.homeCountryCode,
+          followers: usermodel.followers,
+          following: usermodel.following,
           lat: usermodel.lat,
-          long: usermodel.long);
+          long: usermodel.long,
+          geopoint: usermodel.geopoint,
+          createdAt: usermodel.createdAt);
 
       final db = FirebaseFirestore.instance;
       await db.collection("users").doc(_firebaseAuth.currentUser!.uid).set(

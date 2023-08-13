@@ -6,12 +6,13 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../apis/location_api/location.service.dart';
+import '../../apis/location_api/location.api.dart';
 
 final locationNotifierProvider =
     StateNotifierProvider<LocationNotifier, LocationModel>((ref) {
   return LocationNotifier(
-      locationSerices: ref.watch(locationAPIServiceProvider));
+    locationSerices: ref.watch(locationAPIServiceProvider),
+  );
 });
 
 class LocationNotifier extends StateNotifier<LocationModel> {

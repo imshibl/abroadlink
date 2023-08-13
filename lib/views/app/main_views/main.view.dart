@@ -1,9 +1,6 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'package:abroadlink/config/colors.dart';
-import 'package:abroadlink/views/app/main_views/views/explore.view.dart';
+import 'package:abroadlink/views/app/main_views/views/home.view.dart';
 import 'package:abroadlink/views/app/main_views/views/profile.view.dart';
-import 'package:abroadlink/views/app/main_views/views/search.view.dart';
+import 'package:abroadlink/views/app/main_views/views/explore.view.dart';
 import 'package:flutter/material.dart';
 
 class MainView extends StatefulWidget {
@@ -16,9 +13,9 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   int currentIndex = 0;
   List<Widget> views = [
-    ExploreView(),
-    SearchView(),
-    ProfileView(),
+    const HomeView(),
+    const ExploreView(),
+    const ProfileView(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -28,8 +25,6 @@ class _MainViewState extends State<MainView> {
         children: views,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: boxBgColor,
-        selectedItemColor: Colors.grey,
         onTap: (value) {
           setState(() {
             currentIndex = value;
@@ -37,8 +32,8 @@ class _MainViewState extends State<MainView> {
         },
         currentIndex: currentIndex,
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.explore), label: "Explore"),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),

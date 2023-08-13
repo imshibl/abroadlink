@@ -1,7 +1,8 @@
-import 'package:abroadlink/views/app/auth_views/login.view.dart';
-import 'package:abroadlink/views/app/auth_views/verify_email.view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'auth_views/login.view.dart';
+import 'auth_views/verify_email.view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -26,12 +27,14 @@ class _SplashViewState extends State<SplashView> {
         Navigator.pushReplacement(context, LoginView.route());
       });
     }
+    // Future.delayed(const Duration(seconds: 3), () {
+    //   Navigator.pushReplacement(context, InitialStateView.route());
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF393053),
       body: Center(
         child: Image.asset(
           "assets/images/png/logo_no_bg.png",

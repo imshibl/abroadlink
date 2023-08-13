@@ -1,7 +1,7 @@
 import 'package:abroadlink/models/explore_users.model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../apis/explore_api/explore.api.dart';
+import '../../apis/home_api/home.api.dart';
 
 final exploreUserProfileNotifierProvider =
     StateNotifierProvider<ExploreUserProfileNotifier, ExploreUsersModel>((ref) {
@@ -9,25 +9,24 @@ final exploreUserProfileNotifierProvider =
       exploreServices: ref.watch(exploreAPIServiceProvider));
 });
 
-// final getSelectedUserDataNotifier =
-//     FutureProvider.family<NearbyUsersModel, String>((ref, uid) async {
-//   final userProfileProvider = ref.watch(exploreUserProfileNotifier.notifier);
-//   return userProfileProvider.fetchSelectedUserData(selectedUserUID: uid);
-// });
-
 class ExploreUserProfileNotifier extends StateNotifier<ExploreUsersModel> {
   ExploreUserProfileNotifier({required this.exploreServices})
-      : super(const ExploreUsersModel(
-            fullname: '',
-            phoneNumber: '',
-            homeCountry: '',
-            homeCountryCode: '',
-            studyAbroadDestination: '',
-            studyAbroadDestinationCode: '',
-            lat: 0,
-            long: 0,
-            place: '',
-            distance: 0));
+      : super(ExploreUsersModel(
+          fullname: '',
+          phoneNumber: '',
+          homeCountry: '',
+          homeCountryCode: '',
+          studyAbroadDestination: '',
+          studyAbroadDestinationCode: '',
+          lat: 0,
+          long: 0,
+          place: '',
+          distance: 0,
+          followers: [],
+          following: [],
+          geopoint: {},
+          createdAt: DateTime.now(),
+        ));
 
   final ExploreAPIServices exploreServices;
 

@@ -1,289 +1,303 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:abroadlink/config/colors.dart';
-import 'package:abroadlink/models/explore_users.model.dart';
-import 'package:abroadlink/views/app/main_views/views/explore/user_profile.view.dart';
-import 'package:country_flags/country_flags.dart';
+import 'package:abroadlink/const/colors.dart';
+import 'package:abroadlink/const/images.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../notifiers/explore_notifier/explore_users.notifier.dart';
-import '../../../../notifiers/location_notifier/location.notifier.dart';
-
-class ExploreView extends ConsumerStatefulWidget {
+class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
 
   @override
-  ConsumerState<ExploreView> createState() => _ExploreViewState();
+  State<ExploreView> createState() => _ExploreViewState();
 }
 
-class _ExploreViewState extends ConsumerState<ExploreView> {
+class _ExploreViewState extends State<ExploreView> {
   @override
   Widget build(BuildContext context) {
-    final locationNotifier = ref.read(locationNotifierProvider.notifier);
-    return FutureBuilder(
-        future: locationNotifier.getLocation(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Scaffold(
-              body: Center(child: Text("Something went wrong")),
-            );
-          }
-
-          return Scaffold(
-            backgroundColor: mainBgColor,
-            appBar: AppBar(
-              title: Text("AbroadLink"),
-              backgroundColor: mainBgColor,
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.notifications),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.chat),
-                ),
-              ],
-            ),
-            body: Consumer(builder: (context, ref, _) {
-              final locationNotifier2 = ref.watch(locationNotifierProvider);
-
-              return ListView(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: TextFormField(
-                                style: GoogleFonts.poppins(color: Colors.white),
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                  hintText: 'Location',
-                                  fillColor: boxBgColor,
-                                  filled: true,
-                                  isDense: true,
-                                  hintStyle: GoogleFonts.poppins(
-                                      color: Colors.grey.shade400),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: boxBgColor),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: buttonColor,
-                                    ),
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: boxBgColor),
-                                  ),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: buttonColor,
-                                    ),
-                                  ),
-                                ),
-                                controller: TextEditingController(
-                                    text: locationNotifier2.isFetchingLocation
-                                        ? "Fetching Your Location..."
-                                        : locationNotifier2.place),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: boxBgColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            margin: EdgeInsets.only(left: 10, right: 5),
-                            child: IconButton(
-                              icon:
-                                  Icon(Icons.location_pin, color: Colors.white),
-                              onPressed: () {
-                                locationNotifier.updateLocation();
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: boxBgColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            margin: EdgeInsets.only(left: 10, right: 10),
-                            child: IconButton(
-                              icon: Icon(Icons.filter_alt, color: Colors.white),
-                              onPressed: () {},
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, top: 10),
-                        child: Text(
-                          "Explore People",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      FutureBuilder(
-                          future: ref
-                              .read(exploreUsersNotifierProvider.notifier)
-                              .fetchNearbyUsers(locationNotifier2.lat,
-                                  locationNotifier2.long, 500),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(child: CircularProgressIndicator());
-                            } else if (snapshot.data!.isEmpty) {
-                              return Center(child: Text("No Users Found"));
-                            }
-                            final nearbyUsers = snapshot.data;
-                            nearbyUsers!.sort(
-                                (a, b) => a.distance.compareTo(b.distance));
-                            return GridView.builder(
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.9,
-                              ),
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: nearbyUsers.length,
-                              itemBuilder: (context, index) {
-                                ExploreUsersModel user = nearbyUsers[index];
-                                return UsersCard(
-                                  username: user.username!,
-                                  distance: user.distance,
-                                  isKm: ref
-                                      .read(locationNotifierProvider.notifier)
-                                      .shouldDisplayInKilometers(user.distance),
-                                  place: user.place,
-                                  homeCountryCode: user.homeCountryCode,
-                                  studyAbroadDestinationCode:
-                                      user.studyAbroadDestinationCode,
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      UserProfileView.route(
-                                        selectedUserUID: user.uid.toString(),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          }),
-                    ],
-                  ),
-                ],
-              );
-            }),
-          );
-        });
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Explore"),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.search),
+          ),
+        ],
+      ),
+      body: ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ExploreOptions(title: "Edu Abroad Agencies"),
+              ExploreOptions(title: "IELTS/TOEFL Centers")
+            ],
+          ),
+          MainTitle(
+            title: "Featured Edu Abroad Agencies",
+          ),
+          SizedBox(
+            height: 200,
+            child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return FeaturedEduAbroadAgencies();
+                }),
+          ),
+          MainTitle(
+            title: "Featured IELTS/TOEFL Coaching Centers",
+          ),
+          SizedBox(
+            height: 200,
+            child: ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return CoachingCenters();
+                }),
+          ),
+          ExploreEvents(),
+        ],
+      ),
+    );
   }
 }
 
-class UsersCard extends StatelessWidget {
-  final String username;
-  final double distance;
-  final bool isKm;
-  final String place;
-  final String homeCountryCode;
-  final String studyAbroadDestinationCode;
-  final Function() onTap;
-  const UsersCard(
-      {super.key,
-      required this.username,
-      required this.distance,
-      required this.place,
-      required this.homeCountryCode,
-      required this.studyAbroadDestinationCode,
-      required this.onTap,
-      required this.isKm});
+class MainTitle extends StatelessWidget {
+  const MainTitle({
+    super.key,
+    required this.title,
+  });
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: lightColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: EdgeInsets.all(10),
-        margin: EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                size: 35,
-                color: Colors.black,
-              ),
+    return Container(
+      margin: EdgeInsets.only(left: 10, top: 10),
+      child: Text(
+        title,
+        style: TextStyle(
+            color: Colors.white, fontWeight: FontWeight.w500, fontSize: 18),
+      ),
+    );
+  }
+}
+
+class FeaturedEduAbroadAgencies extends StatelessWidget {
+  const FeaturedEduAbroadAgencies({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+      width: 150,
+      decoration: BoxDecoration(
+        color: ConstColors.lightColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
             ),
-            SizedBox(height: 10),
-            Text(
-              username,
-              style: TextStyle(
-                  color: Colors.grey.shade200,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Stack(
               children: [
-                CountryFlag.fromCountryCode(
-                  homeCountryCode,
-                  height: 23,
-                  width: 23,
-                  borderRadius: 3,
+                CachedNetworkImage(
+                  imageUrl: ConstImages.eduAbroadAgencyImage,
+                  width: double.infinity,
                 ),
-                Text(
-                  "  to  ",
-                  style: TextStyle(
-                      color: Colors.grey.shade400, fontWeight: FontWeight.bold),
-                ),
-                CountryFlag.fromCountryCode(
-                  studyAbroadDestinationCode,
-                  height: 23,
-                  width: 23,
-                  borderRadius: 3,
+                Positioned(
+                  top: 5,
+                  left: 5,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      "Featured",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w600),
+                    ),
+                  ),
                 ),
               ],
             ),
-            // Text(
-            //   place,
-            //   style: TextStyle(
-            //     color: Colors.grey.shade200,
-            //     fontSize: 8,
-            //   ),
-            // ),
+          ),
+          Container(
+              padding: EdgeInsets.all(5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Santa Monica Study Abroad Pvt Ltd",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Germany",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(width: 5),
+                      Icon(Icons.check_circle, color: Colors.green, size: 16),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    "Available in 18 Cities",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class CoachingCenters extends StatelessWidget {
+  const CoachingCenters({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+      width: 150,
+      decoration: BoxDecoration(
+        color: ConstColors.lightColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+            ),
+            child: Stack(
+              children: [
+                CachedNetworkImage(
+                  imageUrl: ConstImages.ieltsCoachingCenterImage,
+                  width: double.infinity,
+                ),
+                Positioned(
+                  top: 5,
+                  left: 5,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      "Featured",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+              padding: EdgeInsets.all(5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Winspire Academy",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    "Branches in Kaloor , Kakkanad and 5 other locations",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class ExploreEvents extends StatelessWidget {
+  const ExploreEvents({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            CachedNetworkImage(
+              imageUrl: ConstImages.eventImage,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
             Text(
-              isKm ? "${distance.toStringAsFixed(2)} km" : "within 1 km",
-              // : "${(distance * 1000).toStringAsFixed(2)} m",
+              "Explore Study Abroad Events",
               style: TextStyle(
-                  color: Colors.grey.shade200,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ExploreOptions extends StatelessWidget {
+  const ExploreOptions({
+    super.key,
+    required this.title,
+  });
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Flexible(
+      child: Container(
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 10),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [ConstColors.boxBgColor, ConstColors.lightColor],
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(color: Colors.white, fontSize: 16),
         ),
       ),
     );

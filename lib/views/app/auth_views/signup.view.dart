@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
-import 'package:abroadlink/config/colors.dart';
+import 'package:abroadlink/const/colors.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/views/app/profile_setup_views/setup_profile.view.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,6 @@ class _SignupViewState extends State<SignupView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mainBgColor,
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Form(
@@ -67,26 +66,26 @@ class _SignupViewState extends State<SignupView> {
                       controller: _userNameController,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
-                        fillColor: boxBgColor,
+                        fillColor: ConstColors.boxBgColor,
                         filled: true,
                         isDense: true,
                         hintText: 'Username',
                         hintStyle:
                             GoogleFonts.poppins(color: Colors.grey.shade400),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: boxBgColor),
+                          borderSide: BorderSide(color: ConstColors.boxBgColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: buttonColor,
+                            color: ConstColors.buttonColor,
                           ),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: boxBgColor),
+                          borderSide: BorderSide(color: ConstColors.boxBgColor),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: buttonColor,
+                            color: ConstColors.buttonColor,
                           ),
                         ),
                       ),
@@ -102,26 +101,26 @@ class _SignupViewState extends State<SignupView> {
                       controller: _emailController,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
-                        fillColor: boxBgColor,
+                        fillColor: ConstColors.boxBgColor,
                         filled: true,
                         isDense: true,
                         hintText: 'Email',
                         hintStyle:
                             GoogleFonts.poppins(color: Colors.grey.shade400),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: boxBgColor),
+                          borderSide: BorderSide(color: ConstColors.boxBgColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: buttonColor,
+                            color: ConstColors.buttonColor,
                           ),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: boxBgColor),
+                          borderSide: BorderSide(color: ConstColors.boxBgColor),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: buttonColor,
+                            color: ConstColors.buttonColor,
                           ),
                         ),
                       ),
@@ -141,26 +140,26 @@ class _SignupViewState extends State<SignupView> {
                       obscureText: true,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
-                        fillColor: boxBgColor,
+                        fillColor: ConstColors.boxBgColor,
                         filled: true,
                         isDense: true,
                         hintText: 'Password',
                         hintStyle:
                             GoogleFonts.poppins(color: Colors.grey.shade400),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: boxBgColor),
+                          borderSide: BorderSide(color: ConstColors.boxBgColor),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: buttonColor,
+                            color: ConstColors.buttonColor,
                           ),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: boxBgColor),
+                          borderSide: BorderSide(color: ConstColors.boxBgColor),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: buttonColor,
+                            color: ConstColors.buttonColor,
                           ),
                         ),
                       ),
@@ -185,7 +184,7 @@ class _SignupViewState extends State<SignupView> {
                                 widthFactor: 1,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 1.5,
-                                  color: lightColor,
+                                  color: ConstColors.lightColor,
                                 ),
                               )
                             : MaterialButton(
@@ -243,7 +242,7 @@ class _SignupViewState extends State<SignupView> {
                                   }
                                 },
                                 elevation: 0,
-                                color: buttonColor,
+                                color: ConstColors.buttonColor,
                                 child: Text(
                                   'Register',
                                   style:

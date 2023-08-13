@@ -12,6 +12,8 @@ abstract class ICurrentUserAPIServices {
   Future<UserModel?> getCurrentUserData();
 
   Future<void> updateUserName(String name);
+
+  Stream<DocumentSnapshot> updateUserCounts();
 }
 
 class UserAPIServices implements ICurrentUserAPIServices {
@@ -48,5 +50,16 @@ class UserAPIServices implements ICurrentUserAPIServices {
     }
 
     return Future.value(); // User data not found or user is not logged in
+  }
+
+  @override
+  Stream<DocumentSnapshot> updateUserCounts() {
+    final firestore = FirebaseFirestore.instance;
+    final userDataStream = firestore
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+
+    return userDataStream;
   }
 }
