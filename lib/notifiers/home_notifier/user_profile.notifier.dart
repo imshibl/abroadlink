@@ -35,7 +35,7 @@ class ExploreUserProfileNotifier extends StateNotifier<ExploreUsersModel> {
       required double userLat,
       required double userLong}) async {
     try {
-      state = await exploreServices.fetchUserDetails(
+      state = await exploreServices.getUserProfileDetails(
           uid: selectedUserUID, userLat: userLat, userLong: userLong);
     } catch (e) {
       return Future.error(e);

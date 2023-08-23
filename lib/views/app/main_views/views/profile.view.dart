@@ -5,13 +5,14 @@ import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/notifiers/user_notifier/user.notifier.dart';
 import 'package:abroadlink/utils/snackbar.dart';
 import 'package:abroadlink/views/app/auth_views/login.view.dart';
-import 'package:abroadlink/views/app/main_views/views/profile/edit_profile.view.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../notifiers/location_notifier/location.notifier.dart';
 import '../../../../widgets/customButton1.widget.dart';
+import 'profile/edit_profile.view.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
