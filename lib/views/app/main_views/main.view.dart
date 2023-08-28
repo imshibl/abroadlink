@@ -2,15 +2,18 @@ import 'package:abroadlink/views/app/main_views/views/home.view.dart';
 import 'package:abroadlink/views/app/main_views/views/profile.view.dart';
 import 'package:abroadlink/views/app/main_views/views/explore.view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MainView extends StatefulWidget {
+import '../../../notifiers/refresh_notifier/refresh_notifier.dart';
+
+class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
 
   @override
-  State<MainView> createState() => _MainViewState();
+  ConsumerState<MainView> createState() => _MainViewState();
 }
 
-class _MainViewState extends State<MainView> {
+class _MainViewState extends ConsumerState<MainView> {
   int currentIndex = 0;
   List<Widget> views = [
     const HomeView(),
@@ -19,10 +22,17 @@ class _MainViewState extends State<MainView> {
   ];
   @override
   Widget build(BuildContext context) {
+    ref.watch(refreshNotifierProvider); //
     return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: views,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.read(refreshNotifierProvider.notifier).refresh();
+          return Future.delayed(const Duration(seconds: 1));
+        },
+        child: IndexedStack(
+          index: currentIndex,
+          children: views,
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (value) {

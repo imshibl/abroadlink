@@ -2,7 +2,9 @@
 
 import 'package:abroadlink/const/colors.dart';
 import 'package:abroadlink/notifiers/home_notifier/filter_users.notifier.dart';
-import 'package:abroadlink/notifiers/home_notifier/refresh_home.notifier.dart';
+import 'package:abroadlink/utils/error.dart';
+import 'package:abroadlink/utils/loading.dart';
+import 'package:abroadlink/utils/pagination.dart';
 import 'package:abroadlink/views/app/main_views/views/home/filter.view.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../models/explore_users.model.dart';
 import '../../../../notifiers/home_notifier/explore_users.notifier.dart';
 import '../../../../notifiers/location_notifier/location.notifier.dart';
+import '../../../../notifiers/refresh_notifier/refresh_notifier.dart';
 import 'home/user_profile.view.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -61,283 +64,264 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(refreshHomeNotifierProvider); //listen to refresh home notifier
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.read(refreshHomeNotifierProvider.notifier).refreshHome();
-        return Future.delayed(const Duration(seconds: 1));
-      },
-      child: FutureBuilder(
-          future: ref.read(locationNotifierProvider.notifier).getLocation(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return RefreshIndicator(
-                onRefresh: () {
-                  ref.read(refreshHomeNotifierProvider.notifier).refreshHome();
-                  return Future.delayed(const Duration(seconds: 1));
-                },
-                child: const Scaffold(
-                  body: Center(
-                      child: Text(
-                    "Something went wrong, Pull to refresh",
-                    style: TextStyle(color: Colors.white),
-                  )),
-                ),
-              );
-            }
+    ref.watch(refreshNotifierProvider); //listen to refresh notifier
+    return FutureBuilder(
+        future: ref.read(locationNotifierProvider.notifier).getLocation(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: LoadingAnimation(),
+            );
+          } else if (snapshot.hasError) {
+            return const Scaffold(
+              body: ErrorAnimation(),
+            );
+          }
 
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text("AbroadLink"),
-                actions: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.chat),
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("AbroadLink"),
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.notifications),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.chat),
+                ),
+              ],
+            ),
+            body: Consumer(builder: (context, ref, _) {
+              final locationNotifier = ref.watch(locationNotifierProvider);
+              final filterNotifer = ref.watch(filterUsersNotifierProvider);
+
+              return ListView(
+                controller: _globalUsersScrollController,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, top: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              filterNotifer.showLocalUsersOnly
+                                  ? "People Nearby"
+                                  : "People Around the World",
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: ConstColors.boxBgColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              margin:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              child: IconButton(
+                                icon: const Icon(Icons.filter_alt,
+                                    color: Colors.white),
+                                onPressed: () {
+                                  Navigator.push(context, FilterView.route());
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      //show local users
+                      filterNotifer.showLocalUsersOnly
+                          ? Consumer(builder: (context, ref, _) {
+                              return FutureBuilder(
+                                  future: ref
+                                      .read(
+                                          exploreUsersNotifierProvider.notifier)
+                                      .getInitialUsersLocally(
+                                        userlat: locationNotifier.lat,
+                                        userlong: locationNotifier.long,
+                                        maxDistance: filterNotifer.radius,
+                                        destinationCountry:
+                                            filterNotifer.destinationCountry,
+                                      ),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return LoadingAnimation(
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                2,
+                                      );
+                                    } else if (snapshot.hasError) {
+                                      return const Center(
+                                          child: Text("Something went wrong"));
+                                    } else if (snapshot.data!.isEmpty) {
+                                      return const Center(
+                                          child: Text(
+                                              "No users found, Try expanding your search radius"));
+                                    }
+
+                                    return Consumer(builder: (context, ref, _) {
+                                      final usersData = ref
+                                          .watch(exploreUsersNotifierProvider);
+                                      final isLoadingMoreData = ref
+                                          .watch(exploreUsersNotifierProvider
+                                              .notifier)
+                                          .isLoadingMoreData;
+                                      return Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          GridView.builder(
+                                            gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2,
+                                              childAspectRatio: 0.9,
+                                            ),
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemCount: usersData.length,
+                                            itemBuilder: (context, index) {
+                                              ExploreUsersModel user =
+                                                  usersData[index];
+                                              return UsersCard(
+                                                username: user.username!,
+                                                distance: user.distance,
+                                                isKm: ref
+                                                    .read(
+                                                        locationNotifierProvider
+                                                            .notifier)
+                                                    .shouldDisplayInKilometers(
+                                                        user.distance),
+                                                place: user.place,
+                                                isLocal: filterNotifer
+                                                    .showLocalUsersOnly,
+                                                homeCountryCode:
+                                                    user.homeCountryCode,
+                                                studyAbroadDestinationCode: user
+                                                    .studyAbroadDestinationCode,
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    UserProfileView.route(
+                                                      selectedUserUID:
+                                                          user.uid.toString(),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                          Visibility(
+                                              visible: isLoadingMoreData,
+                                              child: PaginationAnimation()),
+                                        ],
+                                      );
+                                    });
+                                  });
+                            })
+                          //show global users
+                          : Consumer(builder: (context, ref, _) {
+                              return FutureBuilder(
+                                  future: ref
+                                      .read(
+                                          exploreUsersNotifierProvider.notifier)
+                                      .getInitialUsersGlobally(
+                                          userLat: locationNotifier.lat,
+                                          userLong: locationNotifier.long,
+                                          studyAbroadDestination:
+                                              filterNotifer.destinationCountry,
+                                          homeCountry:
+                                              filterNotifer.homeCountry),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return LoadingAnimation(
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                2,
+                                      );
+                                    } else if (snapshot.hasError) {
+                                      return const Center(
+                                          child: Text("Something went wrong"));
+                                    } else if (snapshot.data!.isEmpty) {
+                                      return const Center(
+                                          child: Text("No users found"));
+                                    }
+
+                                    return Consumer(builder: (context, ref, _) {
+                                      final usersData = ref
+                                          .watch(exploreUsersNotifierProvider);
+                                      final isLoadingMoreData = ref
+                                          .watch(exploreUsersNotifierProvider
+                                              .notifier)
+                                          .isLoadingMoreData;
+                                      return Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          GridView.builder(
+                                            gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2,
+                                              childAspectRatio: 0.9,
+                                            ),
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemCount: usersData.length,
+                                            itemBuilder: (context, index) {
+                                              ExploreUsersModel user =
+                                                  usersData[index];
+                                              return UsersCard(
+                                                username: user.username!,
+                                                distance: user.distance,
+                                                isKm: ref
+                                                    .read(
+                                                        locationNotifierProvider
+                                                            .notifier)
+                                                    .shouldDisplayInKilometers(
+                                                        user.distance),
+                                                place: user.place,
+                                                isLocal: filterNotifer
+                                                    .showLocalUsersOnly,
+                                                homeCountryCode:
+                                                    user.homeCountryCode,
+                                                studyAbroadDestinationCode: user
+                                                    .studyAbroadDestinationCode,
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    UserProfileView.route(
+                                                      selectedUserUID:
+                                                          user.uid.toString(),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                          Visibility(
+                                              visible: isLoadingMoreData,
+                                              child: PaginationAnimation()),
+                                        ],
+                                      );
+                                    });
+                                  });
+                            }),
+                    ],
                   ),
                 ],
-              ),
-              body: Consumer(builder: (context, ref, _) {
-                final locationNotifier = ref.watch(locationNotifierProvider);
-                final filterNotifer = ref.watch(filterUsersNotifierProvider);
-
-                return ListView(
-                  controller: _globalUsersScrollController,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10, top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                filterNotifer.showLocalUsersOnly
-                                    ? "People Nearby"
-                                    : "People Around the World",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: ConstColors.boxBgColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                margin:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: IconButton(
-                                  icon: const Icon(Icons.filter_alt,
-                                      color: Colors.white),
-                                  onPressed: () {
-                                    Navigator.push(context, FilterView.route());
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        //show local users
-                        filterNotifer.showLocalUsersOnly
-                            ? Consumer(builder: (context, ref, _) {
-                                return FutureBuilder(
-                                    future: ref
-                                        .read(exploreUsersNotifierProvider
-                                            .notifier)
-                                        .getInitialUsersLocally(
-                                          userlat: locationNotifier.lat,
-                                          userlong: locationNotifier.long,
-                                          maxDistance: filterNotifer.radius,
-                                          destinationCountry:
-                                              filterNotifer.destinationCountry,
-                                        ),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const Center(
-                                            child: CircularProgressIndicator());
-                                      } else if (snapshot.hasError) {
-                                        return const Center(
-                                            child:
-                                                Text("Something went wrong"));
-                                      } else if (snapshot.data!.isEmpty) {
-                                        return const Center(
-                                            child: Text(
-                                                "No users found, Try expanding your search radius"));
-                                      }
-
-                                      return Consumer(
-                                          builder: (context, ref, _) {
-                                        final usersData = ref.watch(
-                                            exploreUsersNotifierProvider);
-                                        final isLoadingMoreData = ref
-                                            .watch(exploreUsersNotifierProvider
-                                                .notifier)
-                                            .isLoadingMoreData;
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            GridView.builder(
-                                              gridDelegate:
-                                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 0.9,
-                                              ),
-                                              shrinkWrap: true,
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              itemCount: usersData.length,
-                                              itemBuilder: (context, index) {
-                                                ExploreUsersModel user =
-                                                    usersData[index];
-                                                return UsersCard(
-                                                  username: user.username!,
-                                                  distance: user.distance,
-                                                  isKm: ref
-                                                      .read(
-                                                          locationNotifierProvider
-                                                              .notifier)
-                                                      .shouldDisplayInKilometers(
-                                                          user.distance),
-                                                  place: user.place,
-                                                  isLocal: filterNotifer
-                                                      .showLocalUsersOnly,
-                                                  homeCountryCode:
-                                                      user.homeCountryCode,
-                                                  studyAbroadDestinationCode: user
-                                                      .studyAbroadDestinationCode,
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      UserProfileView.route(
-                                                        selectedUserUID:
-                                                            user.uid.toString(),
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                            Visibility(
-                                                visible: isLoadingMoreData,
-                                                child:
-                                                    CircularProgressIndicator()),
-                                          ],
-                                        );
-                                      });
-                                    });
-                              })
-                            //show global users
-                            : Consumer(builder: (context, ref, _) {
-                                return FutureBuilder(
-                                    future: ref
-                                        .read(exploreUsersNotifierProvider
-                                            .notifier)
-                                        .getInitialUsersGlobally(
-                                            userLat: locationNotifier.lat,
-                                            userLong: locationNotifier.long,
-                                            studyAbroadDestination:
-                                                filterNotifer
-                                                    .destinationCountry,
-                                            homeCountry:
-                                                filterNotifer.homeCountry),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return const Center(
-                                            child: CircularProgressIndicator());
-                                      } else if (snapshot.hasError) {
-                                        return const Center(
-                                            child:
-                                                Text("Something went wrong"));
-                                      } else if (snapshot.data!.isEmpty) {
-                                        return const Center(
-                                            child: Text("No users found"));
-                                      }
-
-                                      return Consumer(
-                                          builder: (context, ref, _) {
-                                        final usersData = ref.watch(
-                                            exploreUsersNotifierProvider);
-                                        final isLoadingMoreData = ref
-                                            .watch(exploreUsersNotifierProvider
-                                                .notifier)
-                                            .isLoadingMoreData;
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            GridView.builder(
-                                              gridDelegate:
-                                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 0.9,
-                                              ),
-                                              shrinkWrap: true,
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              itemCount: usersData.length,
-                                              itemBuilder: (context, index) {
-                                                ExploreUsersModel user =
-                                                    usersData[index];
-                                                return UsersCard(
-                                                  username: user.username!,
-                                                  distance: user.distance,
-                                                  isKm: ref
-                                                      .read(
-                                                          locationNotifierProvider
-                                                              .notifier)
-                                                      .shouldDisplayInKilometers(
-                                                          user.distance),
-                                                  place: user.place,
-                                                  isLocal: filterNotifer
-                                                      .showLocalUsersOnly,
-                                                  homeCountryCode:
-                                                      user.homeCountryCode,
-                                                  studyAbroadDestinationCode: user
-                                                      .studyAbroadDestinationCode,
-                                                  onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      UserProfileView.route(
-                                                        selectedUserUID:
-                                                            user.uid.toString(),
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                            Visibility(
-                                                visible: isLoadingMoreData,
-                                                child:
-                                                    CircularProgressIndicator()),
-                                          ],
-                                        );
-                                      });
-                                    });
-                              }),
-                      ],
-                    ),
-                  ],
-                );
-              }),
-            );
-          }),
-    );
+              );
+            }),
+          );
+        });
   }
 }
 

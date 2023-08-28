@@ -13,9 +13,5 @@ class FirebaseCollections {
       FirebaseFirestore.instance.collection('usersData');
 }
 
-// final authStateProvider = FutureProvider<User?>((ref) {
-//   return FirebaseAuth.instance.authStateChanges().first;
-// });
-
 final authStateStreamProvider =
     StreamProvider<User?>((ref) => FirebaseAuth.instance.authStateChanges());
