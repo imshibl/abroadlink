@@ -12,5 +12,8 @@ class AppTheme {
       selectedItemColor: Colors.grey.shade300,
       unselectedItemColor: Colors.grey,
     ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: ConstColors.lightColor,
+    ),
   );
 }

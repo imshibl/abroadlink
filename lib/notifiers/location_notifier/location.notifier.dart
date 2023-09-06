@@ -29,10 +29,19 @@ class LocationNotifier extends StateNotifier<LocationModel> {
 
   late String? city;
 
-  fetchLocation() async {
-    // Check if we have location permission
+  Future<bool> getPermission() async {
     final permissionStatus = await Permission.location.request();
     if (permissionStatus == PermissionStatus.granted) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  fetchLocation() async {
+    final permissionGranted = await getPermission();
+
+    if (permissionGranted) {
       state = const LocationModel(
         isFetchingLocation: true,
         isLocationFetched: false,
@@ -92,27 +101,37 @@ class LocationNotifier extends StateNotifier<LocationModel> {
   }
 
   Future getLocation() async {
-    try {
-      final locationData = await locationSerices.getLocation();
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-          locationData["lat"], locationData["long"]);
-      city = placemarks.first.locality;
-      final district = placemarks.first.subLocality;
-      final street = placemarks.first.street;
-      final pincode = placemarks.first.postalCode;
-      final administrativeArea = placemarks.first.administrativeArea;
+    int retryCount = 3;
+    while (retryCount > 0) {
+      try {
+        final locationData = await locationSerices.getLocation();
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+            locationData["lat"], locationData["long"]);
+        city = placemarks.first.locality;
+        final district = placemarks.first.subLocality;
+        final street = placemarks.first.street;
+        final pincode = placemarks.first.postalCode;
+        final administrativeArea = placemarks.first.administrativeArea;
 
-      state = LocationModel(
-        isFetchingLocation: false,
-        isLocationFetched: true,
-        lat: locationData["lat"],
-        long: locationData["long"],
-        place: "$city,$district,$street,$administrativeArea,$pincode",
-        hasError: false,
-      );
-      return state;
-    } catch (e) {
-      return Future.error(e);
+        state = LocationModel(
+          isFetchingLocation: false,
+          isLocationFetched: true,
+          lat: locationData["lat"],
+          long: locationData["long"],
+          place: "$city,$district,$street,$administrativeArea,$pincode",
+          hasError: false,
+        );
+        return state;
+      } catch (e) {
+        print('Error: $e');
+        print('Error: retrying...');
+        await Future.delayed(
+            const Duration(seconds: 3)); // Wait for 5 seconds before retrying
+        retryCount--;
+      }
+    }
+    if (retryCount == 0) {
+      print('Error: Unable to fetch location');
     }
   }
 

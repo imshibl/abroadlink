@@ -2,23 +2,30 @@
 
 import 'package:abroadlink/const/colors.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
+import 'package:abroadlink/notifiers/location_notifier/location.notifier.dart';
 import 'package:abroadlink/views/app/auth_views/signup.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => LoginView());
   const LoginView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  ConsumerState<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginViewState extends ConsumerState<LoginView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(locationNotifierProvider.notifier).getPermission();
+  }
 
   @override
   void dispose() {

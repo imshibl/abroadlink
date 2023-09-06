@@ -1,20 +1,11 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:abroadlink/const/colors.dart';
-import 'package:abroadlink/notifiers/home_notifier/filter_users.notifier.dart';
-import 'package:abroadlink/utils/error.dart';
-import 'package:abroadlink/utils/loading.dart';
-import 'package:abroadlink/utils/pagination.dart';
-import 'package:abroadlink/views/app/main_views/views/home/filter.view.dart';
-import 'package:country_flags/country_flags.dart';
+import 'package:abroadlink/views/app/main_views/views/home/random_fact.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../models/explore_users.model.dart';
-import '../../../../notifiers/home_notifier/explore_users.notifier.dart';
-import '../../../../notifiers/location_notifier/location.notifier.dart';
 import '../../../../notifiers/refresh_notifier/refresh_notifier.dart';
-import 'home/user_profile.view.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => const HomeView());
@@ -25,397 +16,294 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
-  final ScrollController _globalUsersScrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _globalUsersScrollController.addListener(_scrollListener);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _globalUsersScrollController.dispose();
-  }
-
-  void _scrollListener() {
-    if (_globalUsersScrollController.position.pixels ==
-        _globalUsersScrollController.position.maxScrollExtent) {
-      // User has scrolled to the bottom
-      final locationNotifier2 = ref.watch(locationNotifierProvider);
-      final filterNotifer = ref.watch(filterUsersNotifierProvider);
-
-      if (filterNotifer.showLocalUsersOnly) {
-        ref.read(exploreUsersNotifierProvider.notifier).getNextUsersLocally(
-              locationNotifier2.lat,
-              locationNotifier2.long,
-              filterNotifer.radius,
-            );
-      } else {
-        ref.read(exploreUsersNotifierProvider.notifier).getNextUsersGlobally(
-            userLat: locationNotifier2.lat,
-            userLong: locationNotifier2.long,
-            studyAbroadDestination: filterNotifer.destinationCountry,
-            homeCountry: filterNotifer.homeCountry);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    ref.watch(refreshNotifierProvider); //listen to refresh notifier
-    return FutureBuilder(
-        future: ref.read(locationNotifierProvider.notifier).getLocation(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: LoadingAnimation(),
-            );
-          } else if (snapshot.hasError) {
-            return const Scaffold(
-              body: ErrorAnimation(),
-            );
-          }
+    ref.watch(refreshNotifierProvider);
 
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("AbroadLink"),
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.notifications),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("AbroadLink"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, RandomFactView.route());
+            },
+            icon: const Icon(Icons.lightbulb),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.notifications),
+          ),
+        ],
+      ),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 10, top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Community",
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500),
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.chat),
+                Container(
+                  decoration: BoxDecoration(
+                    color: ConstColors.boxBgColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  margin: const EdgeInsets.only(left: 10, right: 10),
+                  child: IconButton(
+                    icon: const Icon(Icons.filter_alt, color: Colors.white),
+                    onPressed: () {},
+                  ),
                 ),
               ],
             ),
-            body: Consumer(builder: (context, ref, _) {
-              final locationNotifier = ref.watch(locationNotifierProvider);
-              final filterNotifer = ref.watch(filterUsersNotifierProvider);
-
-              return ListView(
-                controller: _globalUsersScrollController,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, top: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              filterNotifer.showLocalUsersOnly
-                                  ? "People Nearby"
-                                  : "People Around the World",
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: ConstColors.boxBgColor,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              margin:
-                                  const EdgeInsets.only(left: 10, right: 10),
-                              child: IconButton(
-                                icon: const Icon(Icons.filter_alt,
-                                    color: Colors.white),
-                                onPressed: () {
-                                  Navigator.push(context, FilterView.route());
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      //show local users
-                      filterNotifer.showLocalUsersOnly
-                          ? Consumer(builder: (context, ref, _) {
-                              return FutureBuilder(
-                                  future: ref
-                                      .read(
-                                          exploreUsersNotifierProvider.notifier)
-                                      .getInitialUsersLocally(
-                                        userlat: locationNotifier.lat,
-                                        userlong: locationNotifier.long,
-                                        maxDistance: filterNotifer.radius,
-                                        destinationCountry:
-                                            filterNotifer.destinationCountry,
-                                      ),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return LoadingAnimation(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                2,
-                                      );
-                                    } else if (snapshot.hasError) {
-                                      return const Center(
-                                          child: Text("Something went wrong"));
-                                    } else if (snapshot.data!.isEmpty) {
-                                      return const Center(
-                                          child: Text(
-                                              "No users found, Try expanding your search radius"));
-                                    }
-
-                                    return Consumer(builder: (context, ref, _) {
-                                      final usersData = ref
-                                          .watch(exploreUsersNotifierProvider);
-                                      final isLoadingMoreData = ref
-                                          .watch(exploreUsersNotifierProvider
-                                              .notifier)
-                                          .isLoadingMoreData;
-                                      return Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          GridView.builder(
-                                            gridDelegate:
-                                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              childAspectRatio: 0.9,
-                                            ),
-                                            shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            itemCount: usersData.length,
-                                            itemBuilder: (context, index) {
-                                              ExploreUsersModel user =
-                                                  usersData[index];
-                                              return UsersCard(
-                                                username: user.username!,
-                                                distance: user.distance,
-                                                isKm: ref
-                                                    .read(
-                                                        locationNotifierProvider
-                                                            .notifier)
-                                                    .shouldDisplayInKilometers(
-                                                        user.distance),
-                                                place: user.place,
-                                                isLocal: filterNotifer
-                                                    .showLocalUsersOnly,
-                                                homeCountryCode:
-                                                    user.homeCountryCode,
-                                                studyAbroadDestinationCode: user
-                                                    .studyAbroadDestinationCode,
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    UserProfileView.route(
-                                                      selectedUserUID:
-                                                          user.uid.toString(),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
-                                          Visibility(
-                                              visible: isLoadingMoreData,
-                                              child: PaginationAnimation()),
-                                        ],
-                                      );
-                                    });
-                                  });
-                            })
-                          //show global users
-                          : Consumer(builder: (context, ref, _) {
-                              return FutureBuilder(
-                                  future: ref
-                                      .read(
-                                          exploreUsersNotifierProvider.notifier)
-                                      .getInitialUsersGlobally(
-                                          userLat: locationNotifier.lat,
-                                          userLong: locationNotifier.long,
-                                          studyAbroadDestination:
-                                              filterNotifer.destinationCountry,
-                                          homeCountry:
-                                              filterNotifer.homeCountry),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return LoadingAnimation(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                2,
-                                      );
-                                    } else if (snapshot.hasError) {
-                                      return const Center(
-                                          child: Text("Something went wrong"));
-                                    } else if (snapshot.data!.isEmpty) {
-                                      return const Center(
-                                          child: Text("No users found"));
-                                    }
-
-                                    return Consumer(builder: (context, ref, _) {
-                                      final usersData = ref
-                                          .watch(exploreUsersNotifierProvider);
-                                      final isLoadingMoreData = ref
-                                          .watch(exploreUsersNotifierProvider
-                                              .notifier)
-                                          .isLoadingMoreData;
-                                      return Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          GridView.builder(
-                                            gridDelegate:
-                                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              childAspectRatio: 0.9,
-                                            ),
-                                            shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            itemCount: usersData.length,
-                                            itemBuilder: (context, index) {
-                                              ExploreUsersModel user =
-                                                  usersData[index];
-                                              return UsersCard(
-                                                username: user.username!,
-                                                distance: user.distance,
-                                                isKm: ref
-                                                    .read(
-                                                        locationNotifierProvider
-                                                            .notifier)
-                                                    .shouldDisplayInKilometers(
-                                                        user.distance),
-                                                place: user.place,
-                                                isLocal: filterNotifer
-                                                    .showLocalUsersOnly,
-                                                homeCountryCode:
-                                                    user.homeCountryCode,
-                                                studyAbroadDestinationCode: user
-                                                    .studyAbroadDestinationCode,
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    UserProfileView.route(
-                                                      selectedUserUID:
-                                                          user.uid.toString(),
-                                                    ),
-                                                  );
-                                                },
-                                              );
-                                            },
-                                          ),
-                                          Visibility(
-                                              visible: isLoadingMoreData,
-                                              child: PaginationAnimation()),
-                                        ],
-                                      );
-                                    });
-                                  });
-                            }),
-                    ],
-                  ),
-                ],
-              );
-            }),
-          );
-        });
+          ),
+          TextPost(),
+          TextAndImagePost(),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add),
+      ),
+    );
   }
 }
 
-class UsersCard extends StatelessWidget {
-  final String username;
-  final double distance;
-  final bool isKm;
-  final String place;
-  final String homeCountryCode;
-  final String studyAbroadDestinationCode;
-  final bool isLocal;
-  final Function() onTap;
-  const UsersCard(
-      {super.key,
-      required this.username,
-      required this.distance,
-      required this.place,
-      required this.homeCountryCode,
-      required this.studyAbroadDestinationCode,
-      required this.onTap,
-      required this.isKm,
-      required this.isLocal});
+class TextAndImagePost extends StatelessWidget {
+  const TextAndImagePost({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: ConstColors.lightColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                size: 35,
-                color: Colors.black,
+    return Container(
+      margin: EdgeInsets.all(15),
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: ConstColors.boxBgColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(
+                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWFsZSUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D&w=1000&q=80'),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              username,
-              style: TextStyle(
-                  color: Colors.grey.shade200,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              Container(
+                margin: const EdgeInsets.only(left: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Bartu Can SEZGİN",
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      "2 hours ago",
+                      style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            child: Column(
               children: [
-                CountryFlag.fromCountryCode(
-                  homeCountryCode,
-                  height: 23,
-                  width: 23,
-                  borderRadius: 3,
-                ),
                 Text(
-                  "  to  ",
-                  style: TextStyle(
-                      color: Colors.grey.shade400, fontWeight: FontWeight.bold),
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae n",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
-                CountryFlag.fromCountryCode(
-                  studyAbroadDestinationCode,
-                  height: 23,
-                  width: 23,
-                  borderRadius: 3,
+                //image list
+                SizedBox(
+                  height: 300,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      ImagePostContainer(
+                        imageURL:
+                            "https://www.nerdwallet.com/assets/blog/wp-content/uploads/2021/04/GettyImages-172672886-1920x1080.jpg",
+                      ),
+                      ImagePostContainer(
+                        imageURL:
+                            "https://www.shutterstock.com/shutterstock/photos/758602234/display_1500/stock-photo-empty-airport-terminal-lounge-with-airplane-on-background-d-illustration-758602234.jpg",
+                      ),
+                      ImagePostContainer(
+                        imageURL:
+                            "https://www.nerdwallet.com/assets/blog/wp-content/uploads/2021/04/GettyImages-172672886-1920x1080.jpg",
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-            isLocal
-                ? Text(
-                    isKm ? "${distance.toStringAsFixed(2)} km" : "within 1 km",
-                    style: TextStyle(
-                        color: Colors.grey.shade200,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600),
-                  )
-                : Text(
-                    place,
-                    style: TextStyle(
-                      color: Colors.grey.shade200,
-                      fontSize: 14,
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 15, left: 3, right: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.favorite_border, color: Colors.white),
+                        Text(
+                          "  2.1k",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ],
                     ),
-                  ),
-          ],
+                    SizedBox(width: 10),
+                    Row(
+                      children: [
+                        Icon(Icons.comment_outlined, color: Colors.white),
+                        Text(
+                          "  2.1k",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Icon(Icons.share, color: Colors.white),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ImagePostContainer extends StatelessWidget {
+  const ImagePostContainer({
+    super.key,
+    required this.imageURL,
+  });
+
+  final String imageURL;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 10, right: 5, left: 5),
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Image.network(
+          imageURL,
+          fit: BoxFit.cover,
         ),
+      ),
+    );
+  }
+}
+
+class TextPost extends StatelessWidget {
+  const TextPost({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(15),
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: ConstColors.boxBgColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(
+                    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWFsZSUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D&w=1000&q=80'),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Bartu Can SEZGİN",
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      "2 hours ago",
+                      style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            child: Text(
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae n",
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 15, left: 3, right: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.favorite_border, color: Colors.white),
+                        Text(
+                          "  2.1k",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 10),
+                    Row(
+                      children: [
+                        Icon(Icons.comment_outlined, color: Colors.white),
+                        Text(
+                          "  2.1k",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Icon(Icons.share, color: Colors.white),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

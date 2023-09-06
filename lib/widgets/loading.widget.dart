@@ -3,12 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-import 'facts.dart';
+import '../utils/facts.dart';
 
 class LoadingAnimation extends StatelessWidget {
-  const LoadingAnimation({super.key, this.height});
-
-  final double? height;
+  const LoadingAnimation({super.key});
 
   String getRandomFact() {
     Random random = Random();
@@ -19,12 +17,12 @@ class LoadingAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
+      height: MediaQuery.of(context).size.height / 2,
       alignment: Alignment.center,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.asset('assets/lottie/loading_animation.json', height: 70),
+          Lottie.asset('assets/lottie/loading_animation.json', height: 80),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Text(

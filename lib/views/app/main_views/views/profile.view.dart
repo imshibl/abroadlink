@@ -3,8 +3,8 @@
 import 'package:abroadlink/const/colors.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/notifiers/user_notifier/user.notifier.dart';
-import 'package:abroadlink/utils/snackbar.dart';
 import 'package:abroadlink/views/app/auth_views/login.view.dart';
+import 'package:abroadlink/views/app/main_views/views/explore/explore_people.view.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,13 +43,21 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            return CurrentUserProfileView(
-              fullname: userData!.fullname.toString(),
-              homeCountry: userData.homeCountry.toString(),
-              studyAbroadDestination:
-                  userData.studyAbroadDestination.toString(),
-              followers: userData.followers.length,
-              following: userData.following.length,
+            return ListView(
+              children: [
+                CurrentUserProfileView(
+                  fullname: userData!.fullname.toString(),
+                  homeCountry: userData.homeCountry.toString(),
+                  studyAbroadDestination:
+                      userData.studyAbroadDestination.toString(),
+                  followers: userData.followers.length,
+                  following: userData.following.length,
+                ),
+                const Divider(
+                  color: ConstColors.lightColor,
+                  thickness: 1,
+                ),
+              ],
             );
           })),
     );
@@ -198,8 +206,10 @@ class _CurrentUserProfileViewState extends State<CurrentUserProfileView> {
                   Row(
                     children: [
                       CustomButton1(
-                        text: "Chats",
-                        onTap: () {},
+                        text: "Explore",
+                        onTap: () {
+                          Navigator.push(context, ExplorePeopleView.route());
+                        },
                       ),
                       SizedBox(width: 5),
                       CustomButton1(
@@ -227,57 +237,57 @@ class _CurrentUserProfileViewState extends State<CurrentUserProfileView> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          _updateNameController.text = user.fullname.toString();
-                          return AlertDialog(
-                            title: const Text("Edit Name"),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            content: TextField(
-                              controller: _updateNameController,
-                              decoration: const InputDecoration(
-                                hintText: "Enter your name",
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("Cancel"),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  await ref
-                                      .read(userNotifierProvider.notifier)
-                                      .updateUserName(
-                                          _updateNameController.text)
-                                      .then((value) {
-                                    if (value != null) {
-                                      Navigator.pop(context);
-                                    } else {
-                                      showSnackBar(context,
-                                          message: "Something went wrong");
-                                    }
-                                  });
-                                },
-                                child: const Text("Save"),
-                              ),
-                            ],
-                          );
-                        });
-                  },
-                  child: const Icon(
-                    Icons.edit,
-                    color: Colors.grey,
-                  ),
-                ),
+                // const SizedBox(width: 10),
+                // GestureDetector(
+                //   onTap: () {
+                //     showDialog(
+                //         context: context,
+                //         builder: (context) {
+                //           _updateNameController.text = user.fullname.toString();
+                //           return AlertDialog(
+                //             title: const Text("Edit Name"),
+                //             shape: RoundedRectangleBorder(
+                //               borderRadius: BorderRadius.circular(8),
+                //             ),
+                //             content: TextField(
+                //               controller: _updateNameController,
+                //               decoration: const InputDecoration(
+                //                 hintText: "Enter your name",
+                //               ),
+                //             ),
+                //             actions: [
+                //               TextButton(
+                //                 onPressed: () {
+                //                   Navigator.pop(context);
+                //                 },
+                //                 child: const Text("Cancel"),
+                //               ),
+                //               TextButton(
+                //                 onPressed: () async {
+                //                   await ref
+                //                       .read(userNotifierProvider.notifier)
+                //                       .updateUserName(
+                //                           _updateNameController.text)
+                //                       .then((value) {
+                //                     if (value != null) {
+                //                       Navigator.pop(context);
+                //                     } else {
+                //                       showSnackBar(context,
+                //                           message: "Something went wrong");
+                //                     }
+                //                   });
+                //                 },
+                //                 child: const Text("Save"),
+                //               ),
+                //             ],
+                //           );
+                //         });
+                //   },
+                //   child: const Icon(
+                //     Icons.edit,
+                //     color: Colors.grey,
+                //   ),
+                // ),
               ],
             );
           }),

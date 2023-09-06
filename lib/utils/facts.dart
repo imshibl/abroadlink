@@ -1,3 +1,5 @@
+// facts to show in loading screen
+
 List<String> facts = [
   "Studying abroad allows you to immerse yourself in a different culture, experience new customs, and try out unique foods and traditions.",
   "Living in a foreign country provides a great opportunity to learn or improve a new language by using it in daily life.",
