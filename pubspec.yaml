@@ -35,16 +35,19 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+
+  # UI
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.1
   cached_network_image: ^3.2.3
   google_fonts: ^4.0.3
-  lottie: ^2.2.0
+  lottie: ^2.6.0
 
+  #location
   geocoding: ^2.0.5
   geolocator: ^9.0.2
 
-  # csc_picker: ^0.2.7
+
   country_picker: ^2.0.20
   country_flags: ^2.1.0
 
@@ -58,7 +61,13 @@ dependencies:
   firebase_core: ^2.6.1
   cloud_firestore: ^4.4.2
   firebase_ui_firestore: ^1.5.6
+  #firebase location
   geoflutterfire_plus: ^0.0.16
+
+  #network
+  connectivity_plus: ^4.0.2
+
+
   
 
 dev_dependencies:

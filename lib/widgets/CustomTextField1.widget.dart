@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../config/colors.dart';
+import '../const/colors.dart';
 
 class CustomTextFormField1 extends StatelessWidget {
   const CustomTextFormField1({
@@ -33,25 +33,25 @@ class CustomTextFormField1 extends StatelessWidget {
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           prefixIcon: prefixIcon,
-          fillColor: boxBgColor,
+          fillColor: ConstColors.boxBgColor,
           filled: true,
           isDense: true,
           hintText: hintText,
           hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400),
           enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: boxBgColor),
+            borderSide: BorderSide(color: ConstColors.boxBgColor),
           ),
           focusedBorder: const OutlineInputBorder(
             borderSide: BorderSide(
-              color: buttonColor,
+              color: ConstColors.buttonColor,
             ),
           ),
           errorBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: boxBgColor),
+            borderSide: BorderSide(color: ConstColors.boxBgColor),
           ),
           focusedErrorBorder: const OutlineInputBorder(
             borderSide: BorderSide(
-              color: buttonColor,
+              color: ConstColors.buttonColor,
             ),
           ),
         ),

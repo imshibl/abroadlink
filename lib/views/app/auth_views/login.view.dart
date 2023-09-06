@@ -1,24 +1,31 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:abroadlink/config/colors.dart';
+import 'package:abroadlink/const/colors.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
+import 'package:abroadlink/notifiers/location_notifier/location.notifier.dart';
 import 'package:abroadlink/views/app/auth_views/signup.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => LoginView());
   const LoginView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  ConsumerState<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _LoginViewState extends ConsumerState<LoginView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(locationNotifierProvider.notifier).getPermission();
+  }
 
   @override
   void dispose() {
@@ -31,7 +38,6 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mainBgColor,
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Form(
@@ -67,26 +73,28 @@ class _LoginViewState extends State<LoginView> {
                         controller: _emailController,
                         style: GoogleFonts.poppins(color: Colors.white),
                         decoration: InputDecoration(
-                          fillColor: boxBgColor,
+                          fillColor: ConstColors.boxBgColor,
                           filled: true,
                           isDense: true,
                           hintText: 'Email',
                           hintStyle:
                               GoogleFonts.poppins(color: Colors.grey.shade400),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: boxBgColor),
+                            borderSide:
+                                BorderSide(color: ConstColors.boxBgColor),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: buttonColor,
+                              color: ConstColors.buttonColor,
                             ),
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: boxBgColor),
+                            borderSide:
+                                BorderSide(color: ConstColors.boxBgColor),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: buttonColor,
+                              color: ConstColors.buttonColor,
                             ),
                           ),
                         ),
@@ -106,26 +114,28 @@ class _LoginViewState extends State<LoginView> {
                         obscureText: true,
                         style: GoogleFonts.poppins(color: Colors.white),
                         decoration: InputDecoration(
-                          fillColor: boxBgColor,
+                          fillColor: ConstColors.boxBgColor,
                           filled: true,
                           isDense: true,
                           hintText: 'Password',
                           hintStyle:
                               GoogleFonts.poppins(color: Colors.grey.shade400),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: boxBgColor),
+                            borderSide:
+                                BorderSide(color: ConstColors.boxBgColor),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: buttonColor,
+                              color: ConstColors.buttonColor,
                             ),
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: boxBgColor),
+                            borderSide:
+                                BorderSide(color: ConstColors.boxBgColor),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: buttonColor,
+                              color: ConstColors.buttonColor,
                             ),
                           ),
                         ),
@@ -164,7 +174,7 @@ class _LoginViewState extends State<LoginView> {
                                   widthFactor: 1,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 1.5,
-                                    color: lightColor,
+                                    color: ConstColors.lightColor,
                                   ),
                                 )
                               : MaterialButton(
@@ -181,7 +191,7 @@ class _LoginViewState extends State<LoginView> {
                                     }
                                   },
                                   elevation: 0,
-                                  color: buttonColor,
+                                  color: ConstColors.buttonColor,
                                   child: Text(
                                     'Login',
                                     style: GoogleFonts.poppins(

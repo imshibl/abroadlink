@@ -1,12 +1,12 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:abroadlink/models/current_user.model.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
-import 'package:abroadlink/widgets/CustomTextField1.widget.dart';
+import 'package:abroadlink/widgets/customTextField1.widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../config/colors.dart';
+import '../../../const/colors.dart';
 import 'package:country_picker/country_picker.dart';
 import '../../../notifiers/location_notifier/location.notifier.dart';
 
@@ -62,10 +62,8 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
     final locationNotifier2 = ref.watch(locationNotifierProvider);
 
     return Scaffold(
-      backgroundColor: mainBgColor,
       appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.transparent,
           centerTitle: true,
           title: Text(
             'Setup Profile',
@@ -75,7 +73,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           )),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
@@ -88,8 +86,8 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(height: 30),
-                  CircleAvatar(
+                  const SizedBox(height: 30),
+                  const CircleAvatar(
                     radius: 60,
                     backgroundColor: Colors.white,
                     child: Icon(
@@ -98,7 +96,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 50),
+                  const SizedBox(height: 50),
                   CustomTextFormField1(
                     controller: _nameController,
                     hintText: 'Full name',
@@ -124,8 +122,8 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                             },
                             child: Text(
                               "+$phoneNumberCode",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16),
                             ),
                           ),
                         ),
@@ -172,25 +170,27 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                           readOnly: true,
                           decoration: InputDecoration(
                             hintText: 'Location',
-                            fillColor: boxBgColor,
+                            fillColor: ConstColors.boxBgColor,
                             filled: true,
                             isDense: true,
                             hintStyle: GoogleFonts.poppins(
                                 color: Colors.grey.shade400),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: boxBgColor),
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: ConstColors.boxBgColor),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: buttonColor,
+                                color: ConstColors.buttonColor,
                               ),
                             ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: boxBgColor),
+                            errorBorder: const OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: ConstColors.boxBgColor),
                             ),
-                            focusedErrorBorder: OutlineInputBorder(
+                            focusedErrorBorder: const OutlineInputBorder(
                               borderSide: BorderSide(
-                                color: buttonColor,
+                                color: ConstColors.buttonColor,
                               ),
                             ),
                           ),
@@ -204,7 +204,8 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.location_pin, color: Colors.white),
+                        icon:
+                            const Icon(Icons.location_pin, color: Colors.white),
                         onPressed: () {
                           ref
                               .read(locationNotifierProvider.notifier)
@@ -213,7 +214,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   IconButton(
                     onPressed: () async {
                       final authServiceProvider =
@@ -228,6 +229,12 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                         studyAbroadDestinationCode: destinationCountryCode,
                         lat: locationNotifier2.lat,
                         long: locationNotifier2.long,
+                        createdAt: DateTime.now(),
+                        followers: [],
+                        following: [],
+                        geopoint: GeoFirePoint(GeoPoint(
+                                locationNotifier2.lat, locationNotifier2.long))
+                            .data,
                       );
                       await authServiceProvider.registerWithEmailAndPassword(
                           context,
@@ -236,7 +243,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                           widget.password,
                           userModel);
                     },
-                    icon: Icon(Icons.arrow_forward_ios),
+                    icon: const Icon(Icons.arrow_forward_ios),
                   ),
                 ],
               ),

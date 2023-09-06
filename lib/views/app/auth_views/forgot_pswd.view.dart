@@ -1,11 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:abroadlink/utils/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:abroadlink/config/colors.dart';
+import 'package:abroadlink/const/colors.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   static route() =>
@@ -31,15 +29,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mainBgColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.white,
           ),
@@ -63,30 +59,30 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 "Enter your registered email",
                 style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _emailController,
                 style: GoogleFonts.poppins(color: Colors.white),
                 decoration: InputDecoration(
-                  fillColor: boxBgColor,
+                  fillColor: ConstColors.boxBgColor,
                   filled: true,
                   isDense: true,
                   hintText: 'Email',
                   hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: boxBgColor),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: ConstColors.boxBgColor),
                   ),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: buttonColor,
+                      color: ConstColors.buttonColor,
                     ),
                   ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: boxBgColor),
+                  errorBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: ConstColors.boxBgColor),
                   ),
-                  focusedErrorBorder: OutlineInputBorder(
+                  focusedErrorBorder: const OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: buttonColor,
+                      color: ConstColors.buttonColor,
                     ),
                   ),
                 ),
@@ -100,7 +96,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   return null;
                 },
               ),
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
               SizedBox(
                 width: double.infinity,
                 child: MaterialButton(
@@ -119,7 +115,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 const SnackBar(
                                     content: Text(
                                         "Password reset link is sent to your email")));
-                            Future.delayed(Duration(seconds: 2), () {
+                            Future.delayed(const Duration(seconds: 2), () {
                               Navigator.pop(context);
                             });
                           });
@@ -136,7 +132,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     }
                   },
                   elevation: 0,
-                  color: buttonColor,
+                  color: ConstColors.buttonColor,
                   child: Text(
                     'Send Reset Link',
                     style: GoogleFonts.poppins(color: Colors.white),

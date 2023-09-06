@@ -1,7 +1,6 @@
-import 'package:abroadlink/config/colors.dart';
-import 'package:abroadlink/notifiers/explore_notifier/user_profile.notifier.dart';
+import 'package:abroadlink/notifiers/home_notifier/user_profile.notifier.dart';
 import 'package:abroadlink/notifiers/location_notifier/location.notifier.dart';
-import 'package:abroadlink/views/app/main_views/views/profile.view.dart';
+import 'package:abroadlink/widgets/customButton1.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,7 +30,7 @@ class UserProfileView extends ConsumerWidget {
             return const ProfileErrorView();
           }
           final userData = snapshot.data;
-          return ProfileScreen(
+          return OthersProfileView(
               fullname: userData!.fullname,
               userName: userData.username.toString(),
               homeCountry: userData.homeCountry,
@@ -46,7 +45,6 @@ class LoadingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: mainBgColor,
       body: Center(
         child: CircularProgressIndicator(
           color: Colors.grey,
@@ -62,7 +60,6 @@ class ProfileErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: mainBgColor,
       body: Center(
         child: Text(
           "Error fetching user data",
@@ -73,13 +70,13 @@ class ProfileErrorView extends StatelessWidget {
   }
 }
 
-class ProfileScreen extends StatelessWidget {
+class OthersProfileView extends StatelessWidget {
   final String fullname;
   final String userName;
   final String homeCountry;
   final String studyAbroadDestination;
 
-  const ProfileScreen({
+  const OthersProfileView({
     super.key,
     required this.fullname,
     required this.homeCountry,
@@ -90,8 +87,9 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: mainBgColor,
-      appBar: AppBar(title: Text(userName), backgroundColor: mainBgColor),
+      appBar: AppBar(
+        title: Text(userName),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

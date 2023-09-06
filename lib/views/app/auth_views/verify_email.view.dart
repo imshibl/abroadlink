@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:abroadlink/providers/firebase.provider.dart';
 import 'package:abroadlink/views/app/main_views/main.view.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -67,7 +68,26 @@ class _VerifyEmailViewState extends ConsumerState<VerifyEmailView> {
 
   @override
   Widget build(BuildContext context) {
-    return const MainView();
+    final authStream = ref.watch(authStateStreamProvider);
+    return authStream.when(data: (user) {
+      if (user != null && !user.emailVerified) {
+        return const MainView();
+      } else {
+        return const Text("email not varified");
+      }
+    }, error: (object, stackTrace) {
+      return const Scaffold(
+        body: Center(
+          child: Text("Error"),
+        ),
+      );
+    }, loading: () {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    });
     // return isEmailVerified
     //     ? const MainView()
     //     : Scaffold(
