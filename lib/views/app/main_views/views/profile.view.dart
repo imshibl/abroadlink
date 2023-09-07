@@ -5,6 +5,7 @@ import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/notifiers/user_notifier/user.notifier.dart';
 import 'package:abroadlink/views/app/auth_views/login.view.dart';
 import 'package:abroadlink/views/app/main_views/views/explore/explore_people.view.dart';
+import 'package:abroadlink/widgets/error.widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             final userData = snapshot.data;
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const ErrorAnimation();
             }
+
             return ListView(
               children: [
                 CurrentUserProfileView(

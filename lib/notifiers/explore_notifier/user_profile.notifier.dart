@@ -1,7 +1,7 @@
 import 'package:abroadlink/models/explore_users.model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../apis/home_api/home.api.dart';
+import '../../apis/explore_api/explore.api.dart';
 
 final exploreUserProfileNotifierProvider =
     StateNotifierProvider<ExploreUserProfileNotifier, ExploreUsersModel>((ref) {
