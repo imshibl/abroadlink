@@ -164,7 +164,6 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  // Handle the action for Option 1
                   Navigator.pop(context); // Close the bottom sheet
                 },
               ),
