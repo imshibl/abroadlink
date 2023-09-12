@@ -1,6 +1,8 @@
-import 'package:abroadlink/notifiers/home_notifier/user_profile.notifier.dart';
+import 'package:abroadlink/notifiers/explore_notifier/user_profile.notifier.dart';
 import 'package:abroadlink/notifiers/location_notifier/location.notifier.dart';
 import 'package:abroadlink/widgets/customButton1.widget.dart';
+import 'package:abroadlink/widgets/error.widget.dart';
+import 'package:abroadlink/widgets/loading.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,56 +18,27 @@ class UserProfileView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locationNotifier = ref.read(locationNotifierProvider);
-    return FutureBuilder(
-        future: ref
-            .read(exploreUserProfileNotifierProvider.notifier)
-            .fetchSelectedUserData(
-                selectedUserUID: selectedUserUID,
-                userLat: locationNotifier.lat,
-                userLong: locationNotifier.long),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingView();
-          } else if (snapshot.hasError) {
-            return const ProfileErrorView();
-          }
-          final userData = snapshot.data;
-          return OthersProfileView(
-              fullname: userData!.fullname,
-              userName: userData.username.toString(),
-              homeCountry: userData.homeCountry,
-              studyAbroadDestination: userData.studyAbroadDestination);
-        });
-  }
-}
-
-class LoadingView extends StatelessWidget {
-  const LoadingView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Colors.grey,
-        ),
-      ),
-    );
-  }
-}
-
-class ProfileErrorView extends StatelessWidget {
-  const ProfileErrorView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          "Error fetching user data",
-          style: TextStyle(color: Colors.grey),
-        ),
-      ),
+    return Scaffold(
+      body: FutureBuilder(
+          future: ref
+              .read(exploreUserProfileNotifierProvider.notifier)
+              .fetchSelectedUserData(
+                  selectedUserUID: selectedUserUID,
+                  userLat: locationNotifier.lat,
+                  userLong: locationNotifier.long),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: LoadingAnimation());
+            } else if (snapshot.hasError) {
+              return const Center(child: ErrorAnimation());
+            }
+            final userData = snapshot.data;
+            return OthersProfileView(
+                fullname: userData!.fullname,
+                userName: userData.username.toString(),
+                homeCountry: userData.homeCountry,
+                studyAbroadDestination: userData.studyAbroadDestination);
+          }),
     );
   }
 }

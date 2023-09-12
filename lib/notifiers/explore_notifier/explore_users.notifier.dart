@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
-import '../../apis/home_api/home.api.dart';
+import '../../apis/explore_api/explore.api.dart';
 import '../../providers/firebase.provider.dart';
 import '../location_notifier/location.notifier.dart';
 

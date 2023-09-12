@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:abroadlink/const/colors.dart';
-import 'package:abroadlink/notifiers/home_notifier/filter_users.notifier.dart';
+import 'package:abroadlink/notifiers/explore_notifier/filter_users.notifier.dart';
 import 'package:abroadlink/views/app/main_views/views/explore/filter.view.dart';
 import 'package:abroadlink/widgets/error.widget.dart';
 import 'package:abroadlink/widgets/loading.widget.dart';
@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../models/explore_users.model.dart';
-import '../../../../../notifiers/home_notifier/explore_users.notifier.dart';
+import '../../../../../notifiers/explore_notifier/explore_users.notifier.dart';
 import '../../../../../notifiers/location_notifier/location.notifier.dart';
 import '../../../../../notifiers/refresh_notifier/refresh_notifier.dart';
 import '../../../../../widgets/pagination.widget.dart';

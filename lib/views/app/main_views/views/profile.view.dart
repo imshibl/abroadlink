@@ -1,10 +1,12 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:abroadlink/const/colors.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/notifiers/user_notifier/user.notifier.dart';
 import 'package:abroadlink/views/app/auth_views/login.view.dart';
 import 'package:abroadlink/views/app/main_views/views/explore/explore_people.view.dart';
+import 'package:abroadlink/widgets/error.widget.dart';
+import 'package:abroadlink/widgets/loading.widget.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,9 +23,40 @@ class ProfileView extends ConsumerStatefulWidget {
   ConsumerState<ProfileView> createState() => _ProfileViewState();
 }
 
-class _ProfileViewState extends ConsumerState<ProfileView> {
+class _ProfileViewState extends ConsumerState<ProfileView>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
+  late PageController _pageController;
+  late ValueNotifier<int> _tabIndexNotifier;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
+    _pageController.dispose();
+    _tabIndexNotifier.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    _tabController = TabController(length: 2, vsync: this);
+    _pageController = PageController();
+    _tabIndexNotifier = ValueNotifier(0);
+
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        switch (_tabController.index) {
+          case 0:
+            _tabIndexNotifier.value = 0;
+
+            break;
+          case 1:
+            _tabIndexNotifier.value = 1;
+            break;
+        }
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(FirebaseAuth.instance.currentUser!.displayName!),
@@ -41,9 +74,13 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           builder: ((context, snapshot) {
             final userData = snapshot.data;
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: LoadingAnimation());
+            } else if (snapshot.hasError) {
+              return const ErrorAnimation();
             }
+
             return ListView(
+              shrinkWrap: true,
               children: [
                 CurrentUserProfileView(
                   fullname: userData!.fullname.toString(),
@@ -57,6 +94,48 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   color: ConstColors.lightColor,
                   thickness: 1,
                 ),
+                ValueListenableBuilder(
+                    valueListenable: _tabIndexNotifier,
+                    builder: (context, index, _) {
+                      return Column(
+                        children: [
+                          TabBar(
+                            controller: _tabController,
+                            indicatorColor: ConstColors.lightColor,
+                            onTap: (tabIndex) {
+                              _tabIndexNotifier.value = tabIndex;
+                              _pageController.animateToPage(
+                                tabIndex,
+                                duration: Duration(milliseconds: 500),
+                                curve: Curves.ease,
+                              );
+                            },
+                            tabs: [
+                              Tab(
+                                icon: Icon(Icons.grid_3x3),
+                              ),
+                              Tab(
+                                icon: Icon(Icons.bookmark_border),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            child: PageView(
+                              controller: _pageController,
+                              onPageChanged: (int page) {
+                                // Update the ValueNotifier when the page changes
+                                _tabIndexNotifier.value = page;
+                              },
+                              children: [
+                                Center(child: Text("Posts")),
+                                Center(child: Text("Saved Posts")),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
               ],
             );
           })),
@@ -85,7 +164,6 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-                  // Handle the action for Option 1
                   Navigator.pop(context); // Close the bottom sheet
                 },
               ),

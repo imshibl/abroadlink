@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../../../notifiers/home_notifier/filter_users.notifier.dart';
+import '../../../../../notifiers/explore_notifier/filter_users.notifier.dart';
 
 class FilterView extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(builder: (_) => const FilterView());
