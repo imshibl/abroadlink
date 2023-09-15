@@ -64,6 +64,7 @@ class _SignupViewState extends State<SignupView> {
                     SizedBox(height: 20.0),
                     TextFormField(
                       controller: _userNameController,
+                      textInputAction: TextInputAction.next,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
                         fillColor: ConstColors.boxBgColor,
@@ -99,6 +100,7 @@ class _SignupViewState extends State<SignupView> {
                     SizedBox(height: 10.0),
                     TextFormField(
                       controller: _emailController,
+                      textInputAction: TextInputAction.next,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
                         fillColor: ConstColors.boxBgColor,
@@ -138,6 +140,7 @@ class _SignupViewState extends State<SignupView> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
+                      textInputAction: TextInputAction.done,
                       style: GoogleFonts.poppins(color: Colors.white),
                       decoration: InputDecoration(
                         fillColor: ConstColors.boxBgColor,

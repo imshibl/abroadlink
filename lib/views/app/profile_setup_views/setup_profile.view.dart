@@ -86,17 +86,9 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  const SizedBox(height: 30),
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      size: 50,
-                      color: Colors.black,
-                    ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 5,
                   ),
-                  const SizedBox(height: 50),
                   CustomTextFormField1(
                     controller: _nameController,
                     hintText: 'Full name',

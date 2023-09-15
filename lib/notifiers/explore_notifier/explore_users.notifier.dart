@@ -120,7 +120,7 @@ class ExploreUsersNotifier extends StateNotifier<List<ExploreUsersModel>> {
   }
 
   final List<String> _fetchedLocalUsersData = [];
-  final int limit = 5;
+  final int limit = 8;
 
   Future<List<ExploreUsersModel>> getInitialUsersLocally(
       {required double userlat,

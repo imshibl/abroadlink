@@ -71,6 +71,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       SizedBox(height: 20.0),
                       TextFormField(
                         controller: _emailController,
+                        textInputAction: TextInputAction.next,
                         style: GoogleFonts.poppins(color: Colors.white),
                         decoration: InputDecoration(
                           fillColor: ConstColors.boxBgColor,
@@ -111,6 +112,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       SizedBox(height: 10.0),
                       TextFormField(
                         controller: _passwordController,
+                        textInputAction: TextInputAction.done,
                         obscureText: true,
                         style: GoogleFonts.poppins(color: Colors.white),
                         decoration: InputDecoration(

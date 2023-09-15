@@ -76,7 +76,7 @@ class ExploreAPIServices implements IExploreAPIServices {
         .where('uid', isNotEqualTo: currentUserUid)
         .orderBy('uid')
         .orderBy('createdAt', descending: true)
-        .limit(5);
+        .limit(8);
 
     if (lastDocument != null) {
       usersQuery = usersQuery.startAfterDocument(lastDocument);
