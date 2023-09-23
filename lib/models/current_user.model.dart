@@ -7,8 +7,9 @@ class UserModel {
   final String phoneNumber;
   final String homeCountry;
   final String homeCountryCode;
-  final String studyAbroadDestination;
-  final String studyAbroadDestinationCode;
+  final String abroadDestination;
+  final String abroadDestinationCode;
+  final String travelPurpose;
   final double lat;
   final double long;
   final List<String> followers;
@@ -24,8 +25,9 @@ class UserModel {
     required this.phoneNumber,
     required this.homeCountry,
     required this.homeCountryCode,
-    required this.studyAbroadDestination,
-    required this.studyAbroadDestinationCode,
+    required this.abroadDestination,
+    required this.abroadDestinationCode,
+    required this.travelPurpose,
     required this.lat,
     required this.long,
     required this.followers,
@@ -43,8 +45,9 @@ class UserModel {
     String? phoneNumber,
     String? homeCountry,
     String? homeCountryCode,
-    String? studyAbroadDestination,
-    String? studyAbroadDestinationCode,
+    String? abroadDestination,
+    String? abroadDestinationCode,
+    String? travelPurpose,
     double? lat,
     double? long,
     List<String>? followers,
@@ -61,10 +64,10 @@ class UserModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       homeCountry: homeCountry ?? this.homeCountry,
       homeCountryCode: homeCountryCode ?? this.homeCountryCode,
-      studyAbroadDestination:
-          studyAbroadDestination ?? this.studyAbroadDestination,
-      studyAbroadDestinationCode:
-          studyAbroadDestinationCode ?? this.studyAbroadDestinationCode,
+      abroadDestination: abroadDestination ?? this.abroadDestination,
+      abroadDestinationCode:
+          abroadDestinationCode ?? this.abroadDestinationCode,
+      travelPurpose: travelPurpose ?? this.travelPurpose,
       lat: lat ?? this.lat,
       long: long ?? this.long,
       followers: followers ?? this.followers,
@@ -84,8 +87,9 @@ class UserModel {
       phoneNumber: json['phoneNumber'] as String,
       homeCountry: json['homeCountry'] as String,
       homeCountryCode: json['homeCountryCode'] as String,
-      studyAbroadDestination: json['studyAbroadDestination'] as String,
-      studyAbroadDestinationCode: json['studyAbroadDestinationCode'] as String,
+      abroadDestination: json['abroadDestination'] as String,
+      abroadDestinationCode: json['abroadDestinationCode'] as String,
+      travelPurpose: json['travelPurpose'] as String,
       lat: (json['lat'] as num).toDouble(),
       long: (json['long'] as num).toDouble(),
       followers: List<String>.from((json['followers'] as List<dynamic>)),
@@ -106,8 +110,9 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'homeCountry': homeCountry,
       'homeCountryCode': homeCountryCode,
-      'studyAbroadDestination': studyAbroadDestination,
-      'studyAbroadDestinationCode': studyAbroadDestinationCode,
+      'abroadDestination': abroadDestination,
+      'abroadDestinationCode': abroadDestinationCode,
+      'travelPurpose': travelPurpose,
       'lat': lat,
       'long': long,
       'followers': followers,
@@ -127,8 +132,9 @@ class UserModel {
       phoneNumber: map['phoneNumber'] as String,
       homeCountry: map['homeCountry'] as String,
       homeCountryCode: map['homeCountryCode'] as String,
-      studyAbroadDestination: map['studyAbroadDestination'] as String,
-      studyAbroadDestinationCode: map['studyAbroadDestinationCode'] as String,
+      abroadDestination: map['abroadDestination'] as String,
+      abroadDestinationCode: map['abroadDestinationCode'] as String,
+      travelPurpose: map['travelPurpose'] as String,
       lat: map['lat'] as double,
       long: map['long'] as double,
       followers: List<String>.from((map['followers'] as List<String>)),

@@ -34,14 +34,6 @@ class _ChatViewState extends State<ChatView> {
         body: ListView(
           children: [
             ChatContainer(),
-            ChatContainer(),
-            ChatContainer(),
-            ChatContainer(),
-            ChatContainer(),
-            ChatContainer(),
-            ChatContainer(),
-            ChatContainer(),
-            ChatContainer(),
           ],
         ));
   }

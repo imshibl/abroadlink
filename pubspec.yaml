@@ -67,6 +67,7 @@ dependencies:
   #network
   connectivity_plus: ^4.0.2
 
+  #to check responsiveness
   device_preview: ^1.1.0
 
 

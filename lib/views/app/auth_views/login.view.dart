@@ -202,24 +202,32 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 ),
                         );
                       }),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "New user?",
-                            style: GoogleFonts.poppins(color: Colors.grey),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(context, SignupView.route());
-                            },
-                            child: Text(
-                              "Signup",
-                              style: GoogleFonts.poppins(color: Colors.blue),
-                            ),
-                          ),
-                        ],
-                      ),
+                      Consumer(builder: (context, ref, _) {
+                        final isAuthLoading = ref.watch(authNotifierProvider);
+                        return isAuthLoading
+                            ? SizedBox()
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "New user?",
+                                    style:
+                                        GoogleFonts.poppins(color: Colors.grey),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context, SignupView.route());
+                                    },
+                                    child: Text(
+                                      "Signup",
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.blue),
+                                    ),
+                                  ),
+                                ],
+                              );
+                      }),
                     ],
                   ),
                 ],

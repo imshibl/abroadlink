@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:abroadlink/const/colors.dart';
+import 'package:abroadlink/const/styles/text_styles.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/notifiers/user_notifier/user.notifier.dart';
 import 'package:abroadlink/views/app/auth_views/login.view.dart';
 import 'package:abroadlink/views/app/main_views/views/explore/explore_people.view.dart';
 import 'package:abroadlink/widgets/error.widget.dart';
 import 'package:abroadlink/widgets/loading.widget.dart';
+import 'package:country_flags/country_flags.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -85,8 +87,11 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                 CurrentUserProfileView(
                   fullname: userData!.fullname.toString(),
                   homeCountry: userData.homeCountry.toString(),
-                  studyAbroadDestination:
-                      userData.studyAbroadDestination.toString(),
+                  homeCountryCode: userData.homeCountryCode.toString(),
+                  abroadDestination: userData.abroadDestination.toString(),
+                  abroadDestinationCode:
+                      userData.abroadDestinationCode.toString(),
+                  purpose: userData.travelPurpose,
                   followers: userData.followers.length,
                   following: userData.following.length,
                 ),
@@ -119,7 +124,7 @@ class _ProfileViewState extends ConsumerState<ProfileView>
                               ),
                             ],
                           ),
-                          Container(
+                          SizedBox(
                             height: MediaQuery.of(context).size.height * 0.5,
                             child: PageView(
                               controller: _pageController,
@@ -195,7 +200,10 @@ class _ProfileViewState extends ConsumerState<ProfileView>
 class CurrentUserProfileView extends StatefulWidget {
   final String fullname;
   final String homeCountry;
-  final String studyAbroadDestination;
+  final String homeCountryCode;
+  final String abroadDestination;
+  final String abroadDestinationCode;
+  final String purpose;
   final int followers;
   final int following;
 
@@ -203,7 +211,10 @@ class CurrentUserProfileView extends StatefulWidget {
     super.key,
     required this.fullname,
     required this.homeCountry,
-    required this.studyAbroadDestination,
+    required this.homeCountryCode,
+    required this.abroadDestination,
+    required this.abroadDestinationCode,
+    required this.purpose,
     required this.followers,
     required this.following,
   });
@@ -370,18 +381,33 @@ class _CurrentUserProfileViewState extends State<CurrentUserProfileView> {
             );
           }),
           const SizedBox(height: 5),
-          Text("Home Country: ${widget.homeCountry}",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade200,
-                fontWeight: FontWeight.w400,
-              )),
-          Text("Study Abroad Destination: ${widget.studyAbroadDestination}",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade200,
-                fontWeight: FontWeight.w400,
-              )),
+          Row(
+            children: [
+              Text("Home Country: ${widget.homeCountry}",
+                  style: TextStyles.bioTextStyle),
+              SizedBox(width: 5),
+              CountryFlag.fromCountryCode(
+                widget.homeCountryCode,
+                height: 23,
+                width: 23,
+                borderRadius: 3,
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Text("Abroad Destination: ${widget.abroadDestination}",
+                  style: TextStyles.bioTextStyle),
+              SizedBox(width: 5),
+              CountryFlag.fromCountryCode(
+                widget.abroadDestinationCode,
+                height: 23,
+                width: 23,
+                borderRadius: 3,
+              ),
+            ],
+          ),
+          Text("Purpose: ${widget.purpose}", style: TextStyles.bioTextStyle),
         ],
       ),
     );
