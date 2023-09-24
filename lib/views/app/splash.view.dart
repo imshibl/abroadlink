@@ -1,3 +1,4 @@
+import 'package:abroadlink/const/images.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -27,9 +28,6 @@ class _SplashViewState extends State<SplashView> {
         Navigator.pushReplacement(context, LoginView.route());
       });
     }
-    // Future.delayed(const Duration(seconds: 3), () {
-    //   Navigator.pushReplacement(context, InitialStateView.route());
-    // });
   }
 
   @override
@@ -37,7 +35,7 @@ class _SplashViewState extends State<SplashView> {
     return Scaffold(
       body: Center(
         child: Image.asset(
-          "assets/images/png/logo_no_bg.png",
+          ConstImages.logoImage,
           width: MediaQuery.of(context).size.width / 1.5,
         ),
       ),

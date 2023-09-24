@@ -1,9 +1,11 @@
-import 'package:abroadlink/utils/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:abroadlink/const/colors.dart';
+import 'package:abroadlink/utils/snackbar.dart';
+
+import 'login.view.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   static route() =>
@@ -60,35 +62,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
               ),
               const SizedBox(height: 10),
-              TextFormField(
+              AuthTextField(
                 controller: _emailController,
-                style: GoogleFonts.poppins(color: Colors.white),
-                decoration: InputDecoration(
-                  fillColor: ConstColors.boxBgColor,
-                  filled: true,
-                  isDense: true,
-                  hintText: 'Email',
-                  hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: ConstColors.boxBgColor),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: ConstColors.buttonColor,
-                    ),
-                  ),
-                  errorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: ConstColors.boxBgColor),
-                  ),
-                  focusedErrorBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: ConstColors.buttonColor,
-                    ),
-                  ),
-                ),
+                hintText: 'Email',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                    return 'Please enter an email';
                   }
                   if (!value.contains('@gmail.com')) {
                     return 'Please enter a valid email';

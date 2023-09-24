@@ -3,6 +3,8 @@ import 'package:abroadlink/views/app/main_views/views/explore/filter.view.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import '../const/styles/lotties.dart';
+
 class NoUsersFoundAnimation extends StatelessWidget {
   const NoUsersFoundAnimation({super.key});
 
@@ -14,7 +16,7 @@ class NoUsersFoundAnimation extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.asset('assets/lottie/loading_animation.json', height: 80),
+          Lottie.asset(ConstLottieAnimations.loadingAnimation, height: 80),
           const Padding(
             padding: EdgeInsets.all(10),
             child: Text(

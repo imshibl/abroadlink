@@ -123,15 +123,15 @@ class LocationNotifier extends StateNotifier<LocationModel> {
         );
         return state;
       } catch (e) {
-        print('Error: $e');
-        print('Error: retrying...');
+        // print('Error: $e');
+        // print('Error: retrying...');
         await Future.delayed(
             const Duration(seconds: 3)); // Wait for 5 seconds before retrying
         retryCount--;
       }
     }
     if (retryCount == 0) {
-      print('Error: Unable to fetch location');
+      // print('Error: Unable to fetch location');
     }
   }
 

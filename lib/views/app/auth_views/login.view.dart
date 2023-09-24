@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:abroadlink/const/colors.dart';
+import 'package:abroadlink/const/images.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/notifiers/location_notifier/location.notifier.dart';
 import 'package:abroadlink/views/app/auth_views/signup.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'forgot_pswd.view.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => LoginView());
@@ -65,40 +68,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       ),
                       SizedBox(height: 10.0),
                       Image.asset(
-                        "assets/images/png/two_boys_flying.png",
+                        ConstImages.twoBoysFlyingImage,
                         height: MediaQuery.of(context).size.height * 0.3,
                       ),
                       SizedBox(height: 20.0),
-                      TextFormField(
+                      AuthTextField(
                         controller: _emailController,
+                        hintText: 'Email',
                         textInputAction: TextInputAction.next,
-                        style: GoogleFonts.poppins(color: Colors.white),
-                        decoration: InputDecoration(
-                          fillColor: ConstColors.boxBgColor,
-                          filled: true,
-                          isDense: true,
-                          hintText: 'Email',
-                          hintStyle:
-                              GoogleFonts.poppins(color: Colors.grey.shade400),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: ConstColors.boxBgColor),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: ConstColors.buttonColor,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: ConstColors.boxBgColor),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: ConstColors.buttonColor,
-                            ),
-                          ),
-                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter an email';
@@ -110,37 +87,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         },
                       ),
                       SizedBox(height: 10.0),
-                      TextFormField(
+                      AuthTextField(
                         controller: _passwordController,
-                        textInputAction: TextInputAction.done,
-                        obscureText: true,
-                        style: GoogleFonts.poppins(color: Colors.white),
-                        decoration: InputDecoration(
-                          fillColor: ConstColors.boxBgColor,
-                          filled: true,
-                          isDense: true,
-                          hintText: 'Password',
-                          hintStyle:
-                              GoogleFonts.poppins(color: Colors.grey.shade400),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: ConstColors.boxBgColor),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: ConstColors.buttonColor,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: ConstColors.boxBgColor),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: ConstColors.buttonColor,
-                            ),
-                          ),
-                        ),
+                        hintText: 'Password',
+                        isPassword: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a password';
@@ -156,8 +106,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         alignment: Alignment.topRight,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.of(context)
-                                .pushNamed("/forgotPasswordView");
+                            Navigator.push(context, ForgotPasswordView.route());
                           },
                           child: Text(
                             "Forgot password?",
@@ -206,26 +155,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         final isAuthLoading = ref.watch(authNotifierProvider);
                         return isAuthLoading
                             ? SizedBox()
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "New user?",
-                                    style:
-                                        GoogleFonts.poppins(color: Colors.grey),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context, SignupView.route());
-                                    },
-                                    child: Text(
-                                      "Signup",
-                                      style: GoogleFonts.poppins(
-                                          color: Colors.blue),
-                                    ),
-                                  ),
-                                ],
+                            : LoginOrSignup(
+                                questionText: "New user?",
+                                navText: "Signup",
+                                onTap: () {
+                                  Navigator.push(context, SignupView.route());
+                                },
                               );
                       }),
                     ],
@@ -237,5 +172,55 @@ class _LoginViewState extends ConsumerState<LoginView> {
         ),
       ),
     );
+  }
+}
+
+class AuthTextField extends StatelessWidget {
+  const AuthTextField({
+    super.key,
+    required this.hintText,
+    this.textInputAction,
+    required this.validator,
+    this.isPassword,
+    required this.controller,
+  });
+
+  final TextEditingController controller;
+  final String hintText;
+  final TextInputAction? textInputAction;
+  final String? Function(dynamic value) validator;
+  final bool? isPassword;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+        controller: controller,
+        textInputAction: textInputAction ?? TextInputAction.done,
+        obscureText: isPassword ?? false,
+        style: GoogleFonts.poppins(color: Colors.white),
+        decoration: InputDecoration(
+          fillColor: ConstColors.boxBgColor,
+          filled: true,
+          isDense: true,
+          hintText: hintText,
+          hintStyle: GoogleFonts.poppins(color: Colors.grey.shade400),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: ConstColors.boxBgColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: ConstColors.buttonColor,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: ConstColors.boxBgColor),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: ConstColors.buttonColor,
+            ),
+          ),
+        ),
+        validator: validator);
   }
 }

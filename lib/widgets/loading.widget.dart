@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import '../const/styles/lotties.dart';
 import '../utils/facts.dart';
 
 class LoadingAnimation extends StatelessWidget {
@@ -22,7 +23,7 @@ class LoadingAnimation extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Lottie.asset('assets/lottie/loading_animation.json', height: 80),
+          Lottie.asset(ConstLottieAnimations.loadingAnimation, height: 80),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Text(

@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final authStateStreamProvider =
+    StreamProvider<User?>((ref) => FirebaseAuth.instance.authStateChanges());
+
 final firebaseCollectionProvider =
     Provider<FirebaseCollections>((ref) => FirebaseCollections());
 
@@ -12,6 +15,3 @@ class FirebaseCollections {
   final CollectionReference usersDataCollection =
       FirebaseFirestore.instance.collection('usersData');
 }
-
-final authStateStreamProvider =
-    StreamProvider<User?>((ref) => FirebaseAuth.instance.authStateChanges());

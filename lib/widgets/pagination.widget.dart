@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import '../const/styles/lotties.dart';
+
 class PaginationAnimation extends StatelessWidget {
   const PaginationAnimation({super.key});
 
@@ -8,7 +10,7 @@ class PaginationAnimation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child:
-          Lottie.asset('assets/lottie/pagination_animation.json', height: 80),
+          Lottie.asset(ConstLottieAnimations.paginationAnimation, height: 80),
     );
   }
 }

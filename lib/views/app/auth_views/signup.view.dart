@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'package:abroadlink/const/colors.dart';
+import 'package:abroadlink/const/images.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
+import 'package:abroadlink/views/app/auth_views/login.view.dart';
 import 'package:abroadlink/views/app/profile_setup_views/setup_profile.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,38 +60,14 @@ class _SignupViewState extends State<SignupView> {
                     ),
                     SizedBox(height: 10.0),
                     Image.asset(
-                      "assets/images/png/two_boys_meeting.png",
+                      ConstImages.twoBoysMeetingImage,
                       height: MediaQuery.of(context).size.height * 0.3,
                     ),
                     SizedBox(height: 20.0),
-                    TextFormField(
+                    AuthTextField(
+                      hintText: 'Username',
                       controller: _userNameController,
                       textInputAction: TextInputAction.next,
-                      style: GoogleFonts.poppins(color: Colors.white),
-                      decoration: InputDecoration(
-                        fillColor: ConstColors.boxBgColor,
-                        filled: true,
-                        isDense: true,
-                        hintText: 'Username',
-                        hintStyle:
-                            GoogleFonts.poppins(color: Colors.grey.shade400),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: ConstColors.boxBgColor),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ConstColors.buttonColor,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: ConstColors.boxBgColor),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ConstColors.buttonColor,
-                          ),
-                        ),
-                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a username';
@@ -98,34 +76,10 @@ class _SignupViewState extends State<SignupView> {
                       },
                     ),
                     SizedBox(height: 10.0),
-                    TextFormField(
+                    AuthTextField(
+                      hintText: 'Email',
                       controller: _emailController,
                       textInputAction: TextInputAction.next,
-                      style: GoogleFonts.poppins(color: Colors.white),
-                      decoration: InputDecoration(
-                        fillColor: ConstColors.boxBgColor,
-                        filled: true,
-                        isDense: true,
-                        hintText: 'Email',
-                        hintStyle:
-                            GoogleFonts.poppins(color: Colors.grey.shade400),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: ConstColors.boxBgColor),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ConstColors.buttonColor,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: ConstColors.boxBgColor),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ConstColors.buttonColor,
-                          ),
-                        ),
-                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
@@ -137,35 +91,10 @@ class _SignupViewState extends State<SignupView> {
                       },
                     ),
                     SizedBox(height: 10.0),
-                    TextFormField(
+                    AuthTextField(
+                      hintText: 'Password',
                       controller: _passwordController,
-                      obscureText: true,
-                      textInputAction: TextInputAction.done,
-                      style: GoogleFonts.poppins(color: Colors.white),
-                      decoration: InputDecoration(
-                        fillColor: ConstColors.boxBgColor,
-                        filled: true,
-                        isDense: true,
-                        hintText: 'Password',
-                        hintStyle:
-                            GoogleFonts.poppins(color: Colors.grey.shade400),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: ConstColors.boxBgColor),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ConstColors.buttonColor,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: ConstColors.boxBgColor),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ConstColors.buttonColor,
-                          ),
-                        ),
-                      ),
+                      isPassword: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a password';
@@ -209,15 +138,6 @@ class _SignupViewState extends State<SignupView> {
 
                                     if (isUsernameAvailable &&
                                         isEmailAvailable) {
-                                      // Navigator.pushNamed(
-                                      //   context,
-                                      //   "/setupProfileView",
-                                      //   arguments: {
-                                      //     "username": _userNameController.text,
-                                      //     "email": _emailController.text,
-                                      //     "password": _passwordController.text
-                                      //   },
-                                      // );
                                       Navigator.push(
                                         context,
                                         SetupProfileView.route(
@@ -254,24 +174,18 @@ class _SignupViewState extends State<SignupView> {
                               );
                       }),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Already have an account?",
-                          style: GoogleFonts.poppins(color: Colors.grey),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "Login",
-                            style: GoogleFonts.poppins(color: Colors.blue),
-                          ),
-                        ),
-                      ],
-                    ),
+                    Consumer(builder: (context, ref, _) {
+                      final isAuthLoading = ref.watch(authNotifierProvider);
+                      return isAuthLoading
+                          ? SizedBox()
+                          : LoginOrSignup(
+                              questionText: "Already have an account?",
+                              navText: "Login",
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                    }),
                   ],
                 ),
               ],
@@ -279,6 +193,39 @@ class _SignupViewState extends State<SignupView> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class LoginOrSignup extends StatelessWidget {
+  const LoginOrSignup({
+    super.key,
+    required this.questionText,
+    required this.navText,
+    required this.onTap,
+  });
+
+  final String questionText;
+  final String navText;
+  final Function() onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          questionText,
+          style: GoogleFonts.poppins(color: Colors.grey),
+        ),
+        GestureDetector(
+          onTap: onTap,
+          child: Text(
+            navText,
+            style: GoogleFonts.poppins(color: Colors.blue),
+          ),
+        ),
+      ],
     );
   }
 }
