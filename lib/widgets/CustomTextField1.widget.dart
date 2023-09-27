@@ -12,6 +12,7 @@ class CustomTextFormField1 extends StatelessWidget {
     this.onTap,
     this.readOnly,
     this.prefixIcon,
+    this.validator,
   });
 
   final TextEditingController controller;
@@ -20,6 +21,8 @@ class CustomTextFormField1 extends StatelessWidget {
   final Function()? onTap;
   final bool? readOnly;
   final Widget? prefixIcon;
+  final String? Function(dynamic value)? validator;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -55,6 +58,7 @@ class CustomTextFormField1 extends StatelessWidget {
             ),
           ),
         ),
+        validator: validator,
       ),
     );
   }

@@ -111,14 +111,7 @@ class _SignupViewState extends State<SignupView> {
                       child: Consumer(builder: (context, ref, _) {
                         final isAuthLoading = ref.watch(authNotifierProvider);
                         return isAuthLoading
-                            ? Center(
-                                heightFactor: 1,
-                                widthFactor: 1,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 1.5,
-                                  color: ConstColors.lightColor,
-                                ),
-                              )
+                            ? CustomCircularProgressIndicatior1()
                             : MaterialButton(
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {

@@ -120,14 +120,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         return SizedBox(
                           width: double.infinity,
                           child: isAuthLoading
-                              ? Center(
-                                  heightFactor: 1,
-                                  widthFactor: 1,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 1.5,
-                                    color: ConstColors.lightColor,
-                                  ),
-                                )
+                              ? CustomCircularProgressIndicatior1()
                               : MaterialButton(
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
@@ -170,6 +163,24 @@ class _LoginViewState extends ConsumerState<LoginView> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class CustomCircularProgressIndicatior1 extends StatelessWidget {
+  const CustomCircularProgressIndicatior1({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      heightFactor: 1,
+      widthFactor: 1,
+      child: CircularProgressIndicator(
+        strokeWidth: 1.5,
+        color: ConstColors.lightColor,
       ),
     );
   }

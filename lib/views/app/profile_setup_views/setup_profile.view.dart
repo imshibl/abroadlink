@@ -1,6 +1,6 @@
 import 'package:abroadlink/models/current_user.model.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
-import 'package:abroadlink/widgets/customTextField1.widget.dart';
+import 'package:abroadlink/views/app/auth_views/login.view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../const/colors.dart';
 import 'package:country_picker/country_picker.dart';
 import '../../../notifiers/location_notifier/location.notifier.dart';
+import '../../../widgets/CustomTextField1.widget.dart';
 
 class SetupProfileView extends ConsumerStatefulWidget {
   const SetupProfileView(
@@ -48,12 +49,15 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
   final TextEditingController _preferedCountryController =
       TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   dispose() {
     _nameController.dispose();
     _phoneNumberController.dispose();
     _preferedCountryController.dispose();
     _homeCountryController.dispose();
+
     super.dispose();
   }
 
@@ -77,170 +81,224 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
           )),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
-        child: ScrollConfiguration(
-          behavior: const ScrollBehavior().copyWith(overscroll: false),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height / 5,
-                  ),
-                  CustomTextFormField1(
-                    controller: _nameController,
-                    hintText: 'Full name',
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextFormField1(
-                          controller: _phoneNumberController,
-                          hintText: 'Phone number',
-                          keyboardType: TextInputType.phone,
-                          prefixIcon: TextButton(
-                            onPressed: () {
-                              showCountryPicker(
-                                context: context,
-                                showPhoneCode: true,
-                                onSelect: (Country country) {
-                                  setState(() {
-                                    phoneNumberCode = country.phoneCode;
-                                  });
-                                },
-                              );
+        child: Form(
+          key: _formKey,
+          child: ScrollConfiguration(
+            behavior: const ScrollBehavior().copyWith(overscroll: false),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 5,
+                    ),
+                    CustomTextFormField1(
+                      controller: _nameController,
+                      hintText: 'Full name',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your full name';
+                        }
+                        return null;
+                      },
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextFormField1(
+                            controller: _phoneNumberController,
+                            hintText: 'Phone number',
+                            keyboardType: TextInputType.phone,
+                            prefixIcon: TextButton(
+                              onPressed: () {
+                                showCountryPicker(
+                                  context: context,
+                                  showPhoneCode: true,
+                                  onSelect: (Country country) {
+                                    setState(() {
+                                      phoneNumberCode = country.phoneCode;
+                                    });
+                                  },
+                                );
+                              },
+                              child: Text(
+                                "+$phoneNumberCode",
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your phone number';
+                              }
+                              return null;
                             },
-                            child: Text(
-                              "+$phoneNumberCode",
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 16),
-                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  CustomTextFormField1(
-                    controller: _homeCountryController,
-                    hintText: 'Home country',
-                    readOnly: true,
-                    onTap: () {
-                      showCountryPicker(
-                        context: context,
-                        onSelect: (Country country) {
-                          _homeCountryController.text = country.name;
-                          homeCountryCode = country.countryCode;
-                          setState(() {
-                            phoneNumberCode = country.phoneCode;
-                          });
-                        },
-                      );
-                    },
-                  ),
-                  CustomTextFormField1(
-                    controller: _preferedCountryController,
-                    hintText: 'Country you want to study in',
-                    readOnly: true,
-                    onTap: () {
-                      showCountryPicker(
-                        context: context,
-                        exclude: [homeCountryCode],
-                        onSelect: (Country country) {
-                          _preferedCountryController.text = country.name;
-                          destinationCountryCode = country.countryCode;
-                        },
-                      );
-                    },
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          style: GoogleFonts.poppins(color: Colors.white),
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            hintText: 'Location',
-                            fillColor: ConstColors.boxBgColor,
-                            filled: true,
-                            isDense: true,
-                            hintStyle: GoogleFonts.poppins(
-                                color: Colors.grey.shade400),
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: ConstColors.boxBgColor),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: ConstColors.buttonColor,
-                              ),
-                            ),
-                            errorBorder: const OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: ConstColors.boxBgColor),
-                            ),
-                            focusedErrorBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: ConstColors.buttonColor,
-                              ),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            // locationNotifier.location = value;
+                      ],
+                    ),
+                    CustomTextFormField1(
+                      controller: _homeCountryController,
+                      hintText: 'Home country',
+                      readOnly: true,
+                      onTap: () {
+                        showCountryPicker(
+                          context: context,
+                          onSelect: (Country country) {
+                            _homeCountryController.text = country.name;
+                            homeCountryCode = country.countryCode;
+                            setState(() {
+                              phoneNumberCode = country.phoneCode;
+                            });
                           },
-                          controller: TextEditingController(
-                              text: locationNotifier2.isFetchingLocation
-                                  ? "Fetching Your Location..."
-                                  : locationNotifier2.place),
+                        );
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select your home country';
+                        }
+                        return null;
+                      },
+                    ),
+                    CustomTextFormField1(
+                      controller: _preferedCountryController,
+                      hintText: 'Dream country',
+                      readOnly: true,
+                      onTap: () {
+                        showCountryPicker(
+                          context: context,
+                          exclude: [homeCountryCode],
+                          onSelect: (Country country) {
+                            _preferedCountryController.text = country.name;
+                            destinationCountryCode = country.countryCode;
+                          },
+                        );
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select your destination/dream country';
+                        }
+                        return null;
+                      },
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            style: GoogleFonts.poppins(color: Colors.white),
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              hintText: 'Location',
+                              fillColor: ConstColors.boxBgColor,
+                              filled: true,
+                              isDense: true,
+                              hintStyle: GoogleFonts.poppins(
+                                  color: Colors.grey.shade400),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: ConstColors.boxBgColor),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: ConstColors.buttonColor,
+                                ),
+                              ),
+                              errorBorder: const OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: ConstColors.boxBgColor),
+                              ),
+                              focusedErrorBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: ConstColors.buttonColor,
+                                ),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              // locationNotifier.location = value;
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select your current location';
+                              }
+                              return null;
+                            },
+                            controller: TextEditingController(
+                                text: locationNotifier2.isFetchingLocation
+                                    ? "Fetching Your Location..."
+                                    : locationNotifier2.place),
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        icon:
-                            const Icon(Icons.location_pin, color: Colors.white),
-                        onPressed: () {
-                          ref
-                              .read(locationNotifierProvider.notifier)
-                              .fetchLocation();
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  IconButton(
-                    onPressed: () async {
-                      final authServiceProvider =
-                          ref.read(authNotifierProvider.notifier);
+                        IconButton(
+                          icon: const Icon(Icons.location_pin,
+                              color: Colors.white),
+                          onPressed: () {
+                            ref
+                                .read(locationNotifierProvider.notifier)
+                                .fetchLocation();
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Consumer(builder: (context, ref, _) {
+                      final authNotifier = ref.watch(authNotifierProvider);
+                      Widget animatedWidget = authNotifier
+                          ? const CustomCircularProgressIndicatior1()
+                          : IconButton(
+                              onPressed: () async {
+                                if (!_formKey.currentState!.validate()) {
+                                  return;
+                                }
+                                final authServiceProvider =
+                                    ref.read(authNotifierProvider.notifier);
 
-                      UserModel userModel = UserModel(
-                        fullname: _nameController.text,
-                        phoneNumber: _phoneNumberController.text,
-                        homeCountry: _homeCountryController.text,
-                        homeCountryCode: homeCountryCode,
-                        abroadDestination: _preferedCountryController.text,
-                        abroadDestinationCode: destinationCountryCode,
-                        travelPurpose: "study",
-                        lat: locationNotifier2.lat,
-                        long: locationNotifier2.long,
-                        createdAt: DateTime.now(),
-                        followers: [],
-                        following: [],
-                        geopoint: GeoFirePoint(GeoPoint(
-                                locationNotifier2.lat, locationNotifier2.long))
-                            .data,
+                                UserModel userModel = UserModel(
+                                  fullname: _nameController.text,
+                                  phoneNumber: _phoneNumberController.text,
+                                  homeCountry: _homeCountryController.text,
+                                  homeCountryCode: homeCountryCode,
+                                  abroadDestination:
+                                      _preferedCountryController.text,
+                                  abroadDestinationCode: destinationCountryCode,
+                                  travelPurpose: "study",
+                                  lat: locationNotifier2.lat,
+                                  long: locationNotifier2.long,
+                                  createdAt: DateTime.now(),
+                                  followers: [],
+                                  following: [],
+                                  geopoint: GeoFirePoint(GeoPoint(
+                                          locationNotifier2.lat,
+                                          locationNotifier2.long))
+                                      .data,
+                                );
+                                await authServiceProvider
+                                    .registerWithEmailAndPassword(
+                                        context,
+                                        widget.username,
+                                        widget.email,
+                                        widget.password,
+                                        userModel);
+                              },
+                              icon: const Icon(Icons.arrow_forward_ios),
+                            );
+                      return AnimatedSwitcher(
+                        duration: const Duration(seconds: 1),
+                        transitionBuilder: (child, animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          );
+                        },
+                        child: animatedWidget,
                       );
-                      await authServiceProvider.registerWithEmailAndPassword(
-                          context,
-                          widget.username,
-                          widget.email,
-                          widget.password,
-                          userModel);
-                    },
-                    icon: const Icon(Icons.arrow_forward_ios),
-                  ),
-                ],
-              ),
-            ],
+                    }),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

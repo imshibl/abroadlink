@@ -63,7 +63,10 @@ class AuthNotifier extends StateNotifier<bool> {
 
   Future<bool> checkIfUsernameExists(String username) async {
     try {
-      return await _authServices.isUsernameAvailable(username);
+      state = true;
+      final data = await _authServices.isUsernameAvailable(username);
+      state = false;
+      return data;
     } catch (e) {
       rethrow;
     }
