@@ -3,6 +3,7 @@
 import 'package:abroadlink/const/colors.dart';
 import 'package:abroadlink/const/images.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
+import 'package:abroadlink/utils/snackbar.dart';
 import 'package:abroadlink/views/app/auth_views/login.view.dart';
 import 'package:abroadlink/views/app/profile_setup_views/setup_profile.view.dart';
 import 'package:flutter/material.dart';
@@ -139,21 +140,15 @@ class _SignupViewState extends State<SignupView> {
                                             password: _passwordController.text),
                                       );
                                     } else if (!isUsernameAvailable) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              "Username already taken, try another one"),
-                                        ),
-                                      );
+                                      Utils.showSnackBar(context,
+                                          message:
+                                              "Username already taken, try another one",
+                                          color: Colors.red);
                                     } else if (!isEmailAvailable) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              "Email already used by another account"),
-                                        ),
-                                      );
+                                      Utils.showSnackBar(context,
+                                          message:
+                                              "Email already used by another account",
+                                          color: Colors.red);
                                     }
                                   }
                                 },

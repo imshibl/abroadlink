@@ -26,7 +26,7 @@ class AuthNotifier extends StateNotifier<bool> {
       state = false;
     } catch (e) {
       state = false;
-      showSnackBar(context, message: e.toString());
+      Utils.showSnackBar(context, message: e.toString());
     }
   }
 
@@ -49,7 +49,7 @@ class AuthNotifier extends StateNotifier<bool> {
       state = false;
     } catch (e) {
       state = false;
-      showSnackBar(context, message: e.toString());
+      Utils.showSnackBar(context, message: e.toString());
     }
   }
 

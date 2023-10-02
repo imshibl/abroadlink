@@ -100,11 +100,11 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                           });
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'user-not-found') {
-                            showSnackBar(context,
+                            Utils.showSnackBar(context,
                                 message: "No user found for provided email.");
                           }
                         } catch (_) {
-                          showSnackBar(context,
+                          Utils.showSnackBar(context,
                               message: "Something went wrong.Try again.");
                         }
                       }

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:abroadlink/models/current_user.model.dart';
 import 'package:abroadlink/notifiers/auth_notifier/auth.notifier.dart';
 import 'package:abroadlink/views/app/auth_views/login.view.dart';
@@ -48,6 +50,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _preferedCountryController =
       TextEditingController();
+  final TextEditingController _purposeController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -184,41 +187,55 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                         return null;
                       },
                     ),
+                    CustomTextFormField1(
+                      controller: _purposeController,
+                      hintText: 'Purpose',
+                      readOnly: true,
+                      onTap: () {
+                        _showBottomSheet(context);
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select your travel purpose';
+                        }
+                        return null;
+                      },
+                    ),
                     Row(
                       children: [
                         Expanded(
-                          child: TextFormField(
-                            style: GoogleFonts.poppins(color: Colors.white),
+                          child: CustomTextFormField1(
                             readOnly: true,
-                            decoration: InputDecoration(
-                              hintText: 'Location',
-                              fillColor: ConstColors.boxBgColor,
-                              filled: true,
-                              isDense: true,
-                              hintStyle: GoogleFonts.poppins(
-                                  color: Colors.grey.shade400),
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: ConstColors.boxBgColor),
-                              ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: ConstColors.buttonColor,
-                                ),
-                              ),
-                              errorBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: ConstColors.boxBgColor),
-                              ),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: ConstColors.buttonColor,
-                                ),
-                              ),
-                            ),
-                            onChanged: (value) {
-                              // locationNotifier.location = value;
-                            },
+                            hintText: "Location",
+                            // decoration: InputDecoration(
+                            //   hintText: 'Location',
+                            //   fillColor: ConstColors.boxBgColor,
+                            //   filled: true,
+                            //   isDense: true,
+                            //   hintStyle: GoogleFonts.poppins(
+                            //       color: Colors.grey.shade400),
+                            //   enabledBorder: const OutlineInputBorder(
+                            //     borderSide:
+                            //         BorderSide(color: ConstColors.boxBgColor),
+                            //   ),
+                            //   focusedBorder: const OutlineInputBorder(
+                            //     borderSide: BorderSide(
+                            //       color: ConstColors.buttonColor,
+                            //     ),
+                            //   ),
+                            //   errorBorder: const OutlineInputBorder(
+                            //     borderSide:
+                            //         BorderSide(color: ConstColors.boxBgColor),
+                            //   ),
+                            //   focusedErrorBorder: const OutlineInputBorder(
+                            //     borderSide: BorderSide(
+                            //       color: ConstColors.buttonColor,
+                            //     ),
+                            //   ),
+                            // ),
+                            // onChanged: (value) {
+                            //   // locationNotifier.location = value;
+                            // },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please select your current location';
@@ -263,7 +280,7 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
                                   abroadDestination:
                                       _preferedCountryController.text,
                                   abroadDestinationCode: destinationCountryCode,
-                                  travelPurpose: "study",
+                                  travelPurpose: _purposeController.text,
                                   lat: locationNotifier2.lat,
                                   long: locationNotifier2.long,
                                   createdAt: DateTime.now(),
@@ -302,6 +319,50 @@ class _SetupProfileViewState extends ConsumerState<SetupProfileView> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Text('Education🎓'),
+                onTap: () {
+                  _purposeController.text = "Education";
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Employment👔'),
+                onTap: () {
+                  _purposeController.text = "Employment";
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Text('Tour🏄'),
+                onTap: () {
+                  _purposeController.text = "Tour";
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
